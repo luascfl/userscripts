@@ -1,0 +1,12 @@
+[submodule "filtrar-vagas-espro"]
+	path = filtrar-vagas-espro
+	url = https://github.com/luascfl/filtrar-vagas-espro
+[submodule "gsheets-diff-alerts-mods"]
+	path = gsheets-diff-alerts-mods
+	url = https://github.com/luascfl/gsheets-diff-alerts-mods
+[submodule "hide-liked-posts-instagram"]
+	path = hide-liked-posts-instagram
+	url = https://github.com/luascfl/hide-liked-posts-instagram
+[submodule "manage-chats-chatgpt"]
+	path = manage-chats-chatgpt
+	url = https://github.com/luascfl/manage-chats-chatgpt
