@@ -13,3 +13,6 @@
 [submodule "empty-google-tasks"]
 	path = empty-google-tasks
 	url = https://github.com/luascfl/empty-google-tasks
+[submodule "zotero-web-open-in-desktop"]
+	path = zotero-web-open-in-desktop
+	url = https://github.com/luascfl/zotero-web-open-in-desktop
