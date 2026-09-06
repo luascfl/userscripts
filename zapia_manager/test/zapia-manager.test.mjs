@@ -60,3 +60,8 @@ test('the observer ignores mutations produced by its own controls', () => {
   assert.equal(manager.needsRemount([{ target: pageRow, addedNodes: [managedControl], removedNodes: [] }]), false);
   assert.equal(manager.needsRemount([{ target: pageRow, addedNodes: [pageContent], removedNodes: [] }]), true);
 });
+
+test('the chat manager stays hidden until Zapia renders a chat row', () => {
+  assert.equal(manager.shouldShowChatManager([]), false);
+  assert.equal(manager.shouldShowChatManager([{}]), true);
+});

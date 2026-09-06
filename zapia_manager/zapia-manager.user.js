@@ -67,6 +67,10 @@
     });
   }
 
+  function shouldShowChatManager(chatRows) {
+    return chatRows.length > 0;
+  }
+
   const testApi = {
     normalizeSpace,
     stripManagedPrefix,
@@ -76,6 +80,7 @@
     queueVisibleSelectedChatIds,
     isManagedNode,
     needsRemount,
+    shouldShowChatManager,
   };
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = testApi;
@@ -294,7 +299,11 @@
   }
 
   function renderToolbar() {
+    const count = selectedChatIds.size;
+    const state = `${count}:${deletionQueue.length}`;
     let toolbar = document.querySelector('[data-zapia-manager-toolbar]');
+    if (toolbar?.dataset.zapiaManagerState === state) return;
+
     if (!toolbar) {
       toolbar = document.createElement('aside');
       toolbar.className = 'zapia-manager-toolbar';
@@ -303,8 +312,8 @@
       document.body.append(toolbar);
     }
 
+    toolbar.dataset.zapiaManagerState = state;
     toolbar.replaceChildren();
-    const count = selectedChatIds.size;
     const status = document.createElement('strong');
     status.textContent = `${count} chat${count === 1 ? '' : 's'} selecionado${count === 1 ? '' : 's'}`;
     toolbar.append(status);
@@ -321,14 +330,23 @@
       selectedChatIds.clear();
       deletionQueue = [];
       mountControls();
-      renderToolbar();
     });
     clear.disabled = count === 0;
     toolbar.append(clear);
   }
 
+  function removeToolbar() {
+    document.querySelector('[data-zapia-manager-toolbar]')?.remove();
+  }
+
   function mountControls() {
-    discoverChatRows().forEach(mountRowControls);
+    const rows = discoverChatRows();
+    if (!shouldShowChatManager(rows)) {
+      removeToolbar();
+      return;
+    }
+
+    rows.forEach(mountRowControls);
     renderToolbar();
   }
 
@@ -363,6 +381,7 @@
     const observer = new MutationObserver((records) => {
       if (needsRemount(records)) scheduleMount();
     });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   if (document.body) boot();

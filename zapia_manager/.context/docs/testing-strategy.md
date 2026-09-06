@@ -18,7 +18,7 @@ node --check zapia-manager.user.js
 node --test test/zapia-manager.test.mjs
 ```
 
-The tests cover prefix replacement and idempotence, invalid label rejection, leaf chat-row selection, visible selection queueing, text normalization, the critical rule that a delete action is valid only inside a native menu, never a dialog, and the observer guard that rejects mutations produced by Zapia Manager itself.
+The tests cover prefix replacement and idempotence, invalid label rejection, leaf chat-row selection, visible selection queueing, text normalization, the critical rule that a delete action is valid only inside a native menu, never a dialog, the observer guard that rejects mutations produced by Zapia Manager itself, and suppression of the manager until Zapia renders a chat row.
 
 ## Manual browser validation
 
