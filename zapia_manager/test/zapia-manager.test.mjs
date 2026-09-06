@@ -42,3 +42,21 @@ test('the deletion queue retains only currently visible selected chats', () => {
 
   assert.deepEqual(manager.queueVisibleSelectedChatIds(selected, visible), ['chat-a', 'chat-c']);
 });
+
+function node(managed) {
+  return {
+    nodeType: 1,
+    closest: () => (managed ? {} : null),
+  };
+}
+
+test('the observer ignores mutations produced by its own controls', () => {
+  const managedToolbar = node(true);
+  const pageRow = node(false);
+  const managedControl = node(true);
+  const pageContent = node(false);
+
+  assert.equal(manager.needsRemount([{ target: managedToolbar, addedNodes: [pageContent], removedNodes: [] }]), false);
+  assert.equal(manager.needsRemount([{ target: pageRow, addedNodes: [managedControl], removedNodes: [] }]), false);
+  assert.equal(manager.needsRemount([{ target: pageRow, addedNodes: [pageContent], removedNodes: [] }]), true);
+});

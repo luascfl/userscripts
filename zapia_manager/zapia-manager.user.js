@@ -54,6 +54,19 @@
     return [...selectedIds].filter((id) => visibleIds.has(id));
   }
 
+  function isManagedNode(node) {
+    const element = node?.nodeType === 1 ? node : node?.parentElement;
+    return Boolean(element?.closest?.('[data-zapia-manager-control], [data-zapia-manager-toolbar]'));
+  }
+
+  function needsRemount(records) {
+    return records.some((record) => {
+      if (isManagedNode(record.target)) return false;
+      const changedNodes = [...record.addedNodes, ...record.removedNodes];
+      return changedNodes.some((node) => !isManagedNode(node));
+    });
+  }
+
   const testApi = {
     normalizeSpace,
     stripManagedPrefix,
@@ -61,6 +74,8 @@
     canActivateDeleteCandidate,
     selectLeafChatRows,
     queueVisibleSelectedChatIds,
+    isManagedNode,
+    needsRemount,
   };
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = testApi;
@@ -345,8 +360,9 @@
     if (!location.pathname.startsWith('/chat')) return;
     installStyles();
     mountControls();
-    const observer = new MutationObserver(scheduleMount);
-    observer.observe(document.body, { childList: true, subtree: true });
+    const observer = new MutationObserver((records) => {
+      if (needsRemount(records)) scheduleMount();
+    });
   }
 
   if (document.body) boot();
