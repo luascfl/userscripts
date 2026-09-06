@@ -44,7 +44,8 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 
 ## Chrome acceptance, 2026-09-06
 
-- Version 0.1.3 discovers Flutter semantic chat rows, filters navigation controls, and renders the checkbox and prefix controls as fixed DOM overlays because Flutter semantics nodes do not paint child HTML.
+- Version 0.1.4 discovers Flutter semantic chat rows, filters navigation controls, and renders the checkbox and prefix controls as fixed DOM overlays because Flutter semantics nodes do not paint child HTML.
 - The user-created `teste` chat was renamed to `✔ teste`, selected through its checkbox, passed to the native Zapia exclusion dialog, and then deleted only after an explicit browser action on that dialog. No pre-existing chat was deleted.
+- The live regression test found that `Limpar seleção` reset the internal set but left already mounted checkboxes checked. Version 0.1.4 synchronizes an existing row control with `selectedChatIds` on every mount. After a real reload, selecting and clearing `Compra mínima de USDT e taxa do Gemini` produced `afterSelect: true`, `afterClear: false`, and the toolbar returned to zero.
 - `node --check zapia-manager.user.js` and `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures. `graphify update .` rebuilt 50 nodes and 93 edges.
-- The Tampermonkey BETA dashboard at `options.html#…&nav=dashboard` confirms Zapia Manager version 0.1.3 is enabled and persistent in the connected Chrome profile. The earlier `#scripts` view was the wrong dashboard route.
+- The Tampermonkey BETA dashboard at `options.html#…&nav=dashboard` confirms Zapia Manager version 0.1.4 is enabled and persistent in the connected Chrome profile. The earlier `#scripts` view was the wrong dashboard route.

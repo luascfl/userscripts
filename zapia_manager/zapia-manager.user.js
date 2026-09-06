@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.3
+// @version      0.1.4
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -358,6 +358,7 @@
     const id = chatIdentity(row);
     let controls = rowControlsFor(id);
     if (controls) {
+      controls.querySelector('.zapia-manager-select').checked = selectedChatIds.has(id);
       positionRowControls(controls, row);
       return;
     }
