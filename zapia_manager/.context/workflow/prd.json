@@ -1,0 +1,22 @@
+{
+  "project": "zapia-manager",
+  "description": "A safe LibreWolf Violentmonkey user script for Zapia Chat labels and guarded bulk management.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Manage Zapia chats with labels and guarded bulk deletion",
+      "description": "As a Zapia user, I can apply managed emoji prefixes, select multiple chats, and start each native deletion flow without allowing the script to confirm destructive dialogs.",
+      "acceptanceCriteria": [
+        "Targets https://app.zapia.com/chat only.",
+        "Adds accessible ✔ and 🟡 prefix actions without stacking or duplicating managed prefixes.",
+        "Adds selectable chat rows and a selected-count toolbar.",
+        "Deletion initiation uses Zapia's visible native controls one chat at a time.",
+        "The script never clicks any final deletion confirmation.",
+        "Fixture tests cover prefix replacement, row discovery, selection, and exclusion of final confirmation buttons."
+      ],
+      "priority": "high",
+      "passes": false,
+      "notes": "Implementation and six Node contracts passed. Browser acceptance remains pending: import in Violentmonkey and exercise the logged-in LibreWolf Zapia page."
+    }
+  ]
+}
