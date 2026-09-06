@@ -28,6 +28,13 @@ test('normalization supports text from browser controls', () => {
   assert.equal(manager.normalizeSpace('  Excluir\n chat  '), 'Excluir chat');
 });
 
+test('known Flutter navigation labels are not treated as chat titles', () => {
+  assert.equal(manager.isNavigationActionLabel('Novo Chat'), true);
+  assert.equal(manager.isNavigationActionLabel('Radar 6'), true);
+  assert.equal(manager.isNavigationActionLabel('Conversas'), true);
+  assert.equal(manager.isNavigationActionLabel('Outlook conectado e resumo de e-mails'), false);
+});
+
 test('nested chat candidates collapse to their leaf chat rows', () => {
   const outer = { contains: () => true };
   const inner = { contains: () => false };

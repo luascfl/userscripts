@@ -41,3 +41,10 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 
 - Zapia’s live bootstrap documents a Flutter/CanvasKit stale-cache failure mode and serves its main bundle with a one-year immutable cache header. Version 0.1.1 runs at `document-start` once per profile, removes only Zapia’s `zapia_cache_flushed_v7` recovery marker, and lets Zapia’s own documented cache-recovery routine invalidate stale worker/cache assets and refetch its entry bundle. It does not clear authentication or arbitrary local-storage values.
 - `node --check` and nine Node contracts passed for version 0.1.1. Graphify rebuilt 38 nodes and 68 edges.
+
+## Chrome acceptance, 2026-09-06
+
+- Version 0.1.3 discovers Flutter semantic chat rows, filters navigation controls, and renders the checkbox and prefix controls as fixed DOM overlays because Flutter semantics nodes do not paint child HTML.
+- The user-created `teste` chat was renamed to `✔ teste`, selected through its checkbox, passed to the native Zapia exclusion dialog, and then deleted only after an explicit browser action on that dialog. No pre-existing chat was deleted.
+- `node --check zapia-manager.user.js` and `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures. `graphify update .` rebuilt 50 nodes and 93 edges.
+- The connected Chrome profile has Tampermonkey BETA, not Violentmonkey. Its dashboard did not expose a persistent Zapia Manager entry, so install version 0.1.3 explicitly in the userscript manager before relying on the automatic Flutter-semantics activation after a browser restart.
