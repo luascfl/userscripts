@@ -24,3 +24,7 @@ US-001, implemented and awaiting authenticated LibreWolf browser acceptance.
 ## Validation pending
 
 - Import `zapia-manager.user.js` in Violentmonkey and execute the manual browser sequence in `.context/docs/testing-strategy.md`.
+
+## Remote sync
+
+Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejected with `Permission denied (publickey)` for `git@github.com:luascfl/userscripts.git`; GitHub authentication is required before the local branch can be synchronized.
