@@ -65,3 +65,17 @@ test('the chat manager stays hidden until Zapia renders a chat row', () => {
   assert.equal(manager.shouldShowChatManager([]), false);
   assert.equal(manager.shouldShowChatManager([{}]), true);
 });
+
+test('the Zapia cache recovery request clears only Zapia’s stale-cache marker once', () => {
+  const data = new Map([['zapia_cache_flushed_v7', '1'], ['session', 'preserved']]);
+  const storage = {
+    getItem: (key) => data.get(key) ?? null,
+    setItem: (key, value) => data.set(key, value),
+    removeItem: (key) => data.delete(key),
+  };
+
+  assert.equal(manager.requestZapiaCacheRecovery(storage), true);
+  assert.equal(data.has('zapia_cache_flushed_v7'), false);
+  assert.equal(data.get('session'), 'preserved');
+  assert.equal(manager.requestZapiaCacheRecovery(storage), false);
+});

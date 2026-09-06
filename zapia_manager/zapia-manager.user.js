@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.0
+// @version      0.1.1
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
-// @run-at       document-idle
+// @run-at       document-start
 // @grant        none
 // ==/UserScript==
 
@@ -71,6 +71,19 @@
     return chatRows.length > 0;
   }
 
+  function requestZapiaCacheRecovery(storage) {
+    const recoveryMarker = 'zapia_manager_cache_recovery_v1';
+    const zapiaMarker = 'zapia_cache_flushed_v7';
+    try {
+      if (storage.getItem(recoveryMarker)) return false;
+      storage.setItem(recoveryMarker, '1');
+      storage.removeItem(zapiaMarker);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   const testApi = {
     normalizeSpace,
     stripManagedPrefix,
@@ -81,6 +94,7 @@
     isManagedNode,
     needsRemount,
     shouldShowChatManager,
+    requestZapiaCacheRecovery,
   };
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = testApi;
@@ -89,6 +103,7 @@
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return;
   }
+  requestZapiaCacheRecovery(window.localStorage);
 
   function isVisible(element) {
     if (!(element instanceof Element)) return false;
