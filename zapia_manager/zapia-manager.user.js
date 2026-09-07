@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.12
+// @version      0.1.13
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -392,8 +392,15 @@
     const nav = row.closest('flt-semantics[aria-label="Menu de navegação"]');
     const navRect = nav ? nav.getBoundingClientRect() : row.getBoundingClientRect();
     const rect = row.getBoundingClientRect();
-    controls.style.left = `${Math.max(4, navRect.right - controls.offsetWidth - 6)}px`;
-    controls.style.top = `${rect.top + rect.height / 2}px`;
+    
+    const targetLeft = Math.max(4, navRect.right - controls.offsetWidth - 6);
+    const targetTop = rect.top + rect.height / 2;
+    
+    const currentLeft = parseFloat(controls.style.left);
+    const currentTop = parseFloat(controls.style.top);
+    
+    if (Number.isNaN(currentLeft) || Math.abs(currentLeft - targetLeft) > 0.5) controls.style.left = `${targetLeft}px`;
+    if (Number.isNaN(currentTop) || Math.abs(currentTop - targetTop) > 0.5) controls.style.top = `${targetTop}px`;
   }
 
   function mountRowControls(row) {
