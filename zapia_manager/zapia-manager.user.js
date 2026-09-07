@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.4
+// @version      0.1.5
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -151,7 +151,7 @@
 
     const rowRect = row.getBoundingClientRect();
     const navigationRect = navigation.getBoundingClientRect();
-    return Math.abs(rowRect.left - navigationRect.left) < 1 && rowRect.width >= navigationRect.width * 0.9;
+    return Math.abs(rowRect.left - navigationRect.left) < 1 && rowRect.width >= navigationRect.width * 0.75;
   }
 
   function discoverChatRows() {
