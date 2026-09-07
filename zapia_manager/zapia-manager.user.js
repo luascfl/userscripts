@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.8
+// @version      0.1.9
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -156,9 +156,15 @@
     const navigation = row.closest('flt-semantics[aria-label="Menu de navegação"]');
     const label = row.textContent || row.getAttribute('aria-label') || '';
     if (!navigation || isNavigationActionLabel(label)) return false;
+    const parent = row.parentElement;
+    if (parent?.getAttribute('role') !== 'group') return false;
+
     const rowRect = row.getBoundingClientRect();
     const navigationRect = navigation.getBoundingClientRect();
-    return Math.abs(rowRect.left - navigationRect.left) < 5 && row.parentElement?.getAttribute('role') === 'group';
+    const groupRect = parent.getBoundingClientRect();
+    const centerY = rowRect.top + rowRect.height / 2;
+
+    return Math.abs(rowRect.left - navigationRect.left) < 5 && centerY >= groupRect.top && centerY <= groupRect.bottom;
   }
 
   function discoverChatRows() {
