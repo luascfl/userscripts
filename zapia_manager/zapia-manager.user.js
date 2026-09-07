@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.7
+// @version      0.1.8
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -50,7 +50,7 @@
   }
 
   function cleanChatTitle(text) {
-    return text.replace(/\s*(?:Renomear|Excluir|Fixar|Desafixar|Reportar|Mais ações|Compartilhar|Ouvir|Boa Resposta|Resposta ruim|Editar|\.\.\.)+$/gi, '').trim();
+    return text.replace(/\s*(?:Renomear|Excluir|Fixar|Desafixar|Reportar|Mais ações|Compartilhar|Ouvir|Boa Resposta|Resposta ruim|Editar|Opções|Menu|Share|Delete|Rename|Pin|Unpin|Options|\.\.\.)+$/gi, '').trim();
   }
 
   function stripManagedPrefix(title) {
@@ -154,8 +154,8 @@
     if (!row.matches('flt-semantics[role="button"]')) return true;
 
     const navigation = row.closest('flt-semantics[aria-label="Menu de navegação"]');
-    if (!navigation || isNavigationActionLabel(row.textContent)) return false;
-
+    const label = row.textContent || row.getAttribute('aria-label') || '';
+    if (!navigation || isNavigationActionLabel(label)) return false;
     const rowRect = row.getBoundingClientRect();
     const navigationRect = navigation.getBoundingClientRect();
     return Math.abs(rowRect.left - navigationRect.left) < 5 && row.parentElement?.getAttribute('role') === 'group';
@@ -357,8 +357,10 @@
   }
 
   function positionRowControls(controls, row) {
+    const nav = row.closest('flt-semantics[aria-label="Menu de navegação"]');
+    const navRect = nav ? nav.getBoundingClientRect() : row.getBoundingClientRect();
     const rect = row.getBoundingClientRect();
-    controls.style.left = `${Math.max(4, rect.right - controls.offsetWidth - 6)}px`;
+    controls.style.left = `${Math.max(4, navRect.right - controls.offsetWidth - 6)}px`;
     controls.style.top = `${rect.top + rect.height / 2}px`;
   }
 
