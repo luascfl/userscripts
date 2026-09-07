@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.6
+// @version      0.1.7
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -44,7 +44,13 @@
 
   function isNavigationActionLabel(label) {
     const normalized = normalizeSpace(label);
-    return NAVIGATION_ACTION_LABELS.has(normalized) || /^Radar(?:\s+\d+)?$/u.test(normalized);
+    if (NAVIGATION_ACTION_LABELS.has(normalized) || /^Radar(?:\s+\d+)?$/u.test(normalized)) return true;
+    if (normalized.includes('Logo Zapia') || /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/u.test(normalized)) return true;
+    return false;
+  }
+
+  function cleanChatTitle(text) {
+    return text.replace(/\s*(?:Renomear|Excluir|Fixar|Desafixar|Reportar|Mais ações|Compartilhar|Ouvir|Boa Resposta|Resposta ruim|Editar|\.\.\.)+$/gi, '').trim();
   }
 
   function stripManagedPrefix(title) {
@@ -140,7 +146,8 @@
   function chatIdentity(row) {
     const link = row.matches('a[href]') ? row : row.querySelector('a[href*="/chat/"]');
     const explicitId = row.getAttribute('data-chat-id') || row.getAttribute('data-conversation-id');
-    return explicitId || link?.href || `text:${normalizeSpace(row.textContent)}`;
+    const rawText = normalizeSpace(row.textContent || row.getAttribute('aria-label') || '');
+    return explicitId || link?.href || `text:${cleanChatTitle(rawText)}`;
   }
 
   function isFlutterChatRow(row) {
@@ -165,7 +172,8 @@
 
   function describeRow(row) {
     const named = row.querySelector('[data-testid*="title" i], [data-testid*="name" i], [class*="title" i], [class*="name" i]');
-    return normalizeSpace(named?.textContent || row.textContent).slice(0, 80) || 'chat sem título';
+    const rawText = normalizeSpace(named?.textContent || row.textContent || row.getAttribute('aria-label') || '');
+    return cleanChatTitle(rawText).slice(0, 80) || 'chat sem título';
   }
 
   function semanticLabel(element) {
