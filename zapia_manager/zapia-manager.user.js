@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.13
+// @version      0.1.16
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -35,7 +35,8 @@
   const EDIT_PATTERN = /(?:renomear|editar(?:\s+(?:nome|chat|conversa))?|rename|edit(?:\s+(?:name|chat|conversation))?)/i;
   const DELETE_PATTERN = /(?:excluir|apagar|deletar|delete|remove)/i;
   const selectedChatIds = new Set();
-  let deletionQueue = [];
+  const staleControlTimestamps = new Map();
+  const STALE_GRACE_MS = 400;
   let observerScheduled = false;
 
   function normalizeSpace(value) {
@@ -68,8 +69,8 @@
     return containerRole === 'menu' && DELETE_PATTERN.test(normalizeSpace(label));
   }
 
-  function selectLeafChatRows(candidates) {
-    return candidates.filter((row) => !candidates.some((other) => other !== row && row.contains(other)));
+  function selectRootChatRows(candidates) {
+    return candidates.filter((row) => !candidates.some((other) => other !== row && other.contains(row)));
   }
 
   function queueVisibleSelectedChatIds(selectedIds, visibleIds) {
@@ -111,7 +112,7 @@
     stripManagedPrefix,
     withPrefix,
     canActivateDeleteCandidate,
-    selectLeafChatRows,
+    selectRootChatRows,
     queueVisibleSelectedChatIds,
     isManagedNode,
     needsRemount,
@@ -150,56 +151,34 @@
     return explicitId || link?.href || `text:${cleanChatTitle(rawText)}`;
   }
 
-  function getClippingBounds() {
+  const HEADER_CLIP_TOP = 50;
+
+  function isFlutterChatRow(row) {
+    if (!row.matches('flt-semantics[role="button"]')) return false;
+
     const nav = document.querySelector('flt-semantics[aria-label="Menu de navegação"]');
-    if (!nav) return null;
-    
-    const navRect = nav.getBoundingClientRect();
-    const allButtons = [...nav.querySelectorAll('flt-semantics[role="button"]')];
-    
-    const profile = allButtons.find((b) => {
-      const text = normalizeSpace(b.textContent || b.getAttribute('aria-label') || '');
-      return text.includes('@') && text.length > 10;
-    });
-    
-    const navHeaders = allButtons.filter((b) => {
-      const text = normalizeSpace(b.textContent || b.getAttribute('aria-label') || '');
-      return isNavigationActionLabel(text);
-    });
-    
-    const lowestHeader = navHeaders.reduce((lowest, curr) => {
-      return (curr.getBoundingClientRect().bottom > (lowest?.getBoundingClientRect().bottom || 0)) ? curr : lowest;
-    }, null);
-    
-    return {
-      navRect,
-      minY: lowestHeader ? lowestHeader.getBoundingClientRect().bottom : navRect.top,
-      maxY: profile ? profile.getBoundingClientRect().top : navRect.bottom
-    };
-  }
+    if (!nav || !nav.contains(row)) return false;
 
-  function isFlutterChatRow(row, bounds) {
-    if (!bounds || !row.matches('flt-semantics[role="button"]')) return false;
-
-    const label = row.textContent || row.getAttribute('aria-label') || '';
+    const label = normalizeSpace(row.textContent || row.getAttribute('aria-label') || '');
     if (isNavigationActionLabel(label)) return false;
 
     const rowRect = row.getBoundingClientRect();
-    const centerY = rowRect.top + rowRect.height / 2;
+    const navRect = nav.getBoundingClientRect();
 
-    return Math.abs(rowRect.left - bounds.navRect.left) < 5 && 
-           rowRect.height > 20 && rowRect.height < 100 &&
-           centerY >= bounds.minY && centerY <= bounds.maxY;
+    if (Math.abs(rowRect.left - navRect.left) > 5) return false;
+    if (rowRect.height < 20 || rowRect.height > 100) return false;
+    if (rowRect.top < HEADER_CLIP_TOP || rowRect.top > window.innerHeight) return false;
+
+    return true;
   }
 
   function discoverChatRows() {
-    const bounds = getClippingBounds();
     const candidates = [...document.querySelectorAll(CHAT_ROW_SELECTORS.join(','))]
       .filter((row) => isVisible(row) && !row.closest('[data-zapia-manager-toolbar]'))
       .filter((row) => normalizeSpace(row.textContent).length > 0)
-      .filter((row) => isFlutterChatRow(row, bounds));
+      .filter((row) => isFlutterChatRow(row));
 
-    return selectLeafChatRows(candidates);
+    return selectRootChatRows(candidates);
   }
 
   function describeRow(row) {
@@ -433,8 +412,8 @@
 
     controls.append(
       select,
-      button('✔', `Adicionar prefixo ✔ a ${describeRow(row)}`, () => applyPrefix(row, '✔ ')),
-      button('🟡', `Adicionar prefixo 🟡 a ${describeRow(row)}`, () => applyPrefix(row, '🟡 ')),
+      button('✔', `Adicionar prefixo ✔ a ${describeRow(row)}`, () => rediscoverAndApply(id, '✔ ')),
+      button('🟡', `Adicionar prefixo 🟡 a ${describeRow(row)}`, () => rediscoverAndApply(id, '🟡 ')),
     );
     document.body.append(controls);
     positionRowControls(controls, row);
@@ -502,10 +481,29 @@
     document.querySelector('[data-zapia-manager-toolbar]')?.remove();
   }
 
+  async function rediscoverAndApply(id, prefix) {
+    let row = discoverChatRows().find((r) => chatIdentity(r) === id);
+    if (!row) {
+      await new Promise((r) => setTimeout(r, 300));
+      row = discoverChatRows().find((r) => chatIdentity(r) === id);
+    }
+    if (!row) throw new Error('Chat não encontrado. Tente novamente.');
+    await applyPrefix(row, prefix);
+  }
+
   function removeStaleRowControls(rows) {
     const ids = new Set(rows.map(chatIdentity));
+    const now = Date.now();
     for (const controls of document.querySelectorAll('[data-zapia-manager-controls]')) {
-      if (!ids.has(controls.dataset.zapiaManagerChatId)) controls.remove();
+      const cid = controls.dataset.zapiaManagerChatId;
+      if (ids.has(cid)) {
+        staleControlTimestamps.delete(cid);
+      } else if (!staleControlTimestamps.has(cid)) {
+        staleControlTimestamps.set(cid, now);
+      } else if (now - staleControlTimestamps.get(cid) > STALE_GRACE_MS) {
+        controls.remove();
+        staleControlTimestamps.delete(cid);
+      }
     }
   }
 

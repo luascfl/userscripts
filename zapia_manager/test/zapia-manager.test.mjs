@@ -35,12 +35,12 @@ test('known Flutter navigation labels are not treated as chat titles', () => {
   assert.equal(manager.isNavigationActionLabel('Outlook conectado e resumo de e-mails'), false);
 });
 
-test('nested chat candidates collapse to their leaf chat rows', () => {
-  const outer = { contains: () => true };
+test('nested chat candidates collapse to root chat rows', () => {
   const inner = { contains: () => false };
   const sibling = { contains: () => false };
+  const outer = { contains: (o) => o === inner };
 
-  assert.deepEqual(manager.selectLeafChatRows([outer, inner, sibling]), [inner, sibling]);
+  assert.deepEqual(manager.selectRootChatRows([outer, inner, sibling]), [outer, sibling]);
 });
 
 test('the deletion queue retains only currently visible selected chats', () => {
