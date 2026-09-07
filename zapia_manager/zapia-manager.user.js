@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.9
+// @version      0.1.12
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -150,28 +150,54 @@
     return explicitId || link?.href || `text:${cleanChatTitle(rawText)}`;
   }
 
-  function isFlutterChatRow(row) {
-    if (!row.matches('flt-semantics[role="button"]')) return true;
+  function getClippingBounds() {
+    const nav = document.querySelector('flt-semantics[aria-label="Menu de navegação"]');
+    if (!nav) return null;
+    
+    const navRect = nav.getBoundingClientRect();
+    const allButtons = [...nav.querySelectorAll('flt-semantics[role="button"]')];
+    
+    const profile = allButtons.find((b) => {
+      const text = normalizeSpace(b.textContent || b.getAttribute('aria-label') || '');
+      return text.includes('@') && text.length > 10;
+    });
+    
+    const navHeaders = allButtons.filter((b) => {
+      const text = normalizeSpace(b.textContent || b.getAttribute('aria-label') || '');
+      return isNavigationActionLabel(text);
+    });
+    
+    const lowestHeader = navHeaders.reduce((lowest, curr) => {
+      return (curr.getBoundingClientRect().bottom > (lowest?.getBoundingClientRect().bottom || 0)) ? curr : lowest;
+    }, null);
+    
+    return {
+      navRect,
+      minY: lowestHeader ? lowestHeader.getBoundingClientRect().bottom : navRect.top,
+      maxY: profile ? profile.getBoundingClientRect().top : navRect.bottom
+    };
+  }
 
-    const navigation = row.closest('flt-semantics[aria-label="Menu de navegação"]');
+  function isFlutterChatRow(row, bounds) {
+    if (!bounds || !row.matches('flt-semantics[role="button"]')) return false;
+
     const label = row.textContent || row.getAttribute('aria-label') || '';
-    if (!navigation || isNavigationActionLabel(label)) return false;
-    const parent = row.parentElement;
-    if (parent?.getAttribute('role') !== 'group') return false;
+    if (isNavigationActionLabel(label)) return false;
 
     const rowRect = row.getBoundingClientRect();
-    const navigationRect = navigation.getBoundingClientRect();
-    const groupRect = parent.getBoundingClientRect();
     const centerY = rowRect.top + rowRect.height / 2;
 
-    return Math.abs(rowRect.left - navigationRect.left) < 5 && centerY >= groupRect.top && centerY <= groupRect.bottom;
+    return Math.abs(rowRect.left - bounds.navRect.left) < 5 && 
+           rowRect.height > 20 && rowRect.height < 100 &&
+           centerY >= bounds.minY && centerY <= bounds.maxY;
   }
 
   function discoverChatRows() {
+    const bounds = getClippingBounds();
     const candidates = [...document.querySelectorAll(CHAT_ROW_SELECTORS.join(','))]
       .filter((row) => isVisible(row) && !row.closest('[data-zapia-manager-toolbar]'))
       .filter((row) => normalizeSpace(row.textContent).length > 0)
-      .filter(isFlutterChatRow);
+      .filter((row) => isFlutterChatRow(row, bounds));
 
     return selectLeafChatRows(candidates);
   }
@@ -506,12 +532,12 @@
   function installStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      .zapia-manager-row-controls { position: fixed; z-index: 2147483646; display: inline-flex; align-items: center; gap: 4px; transform: translateY(-50%); padding: 2px 4px; border: 1px solid #62666d; border-radius: 6px; background: #222c; }
-      .zapia-manager-button { border: 1px solid currentColor; border-radius: 4px; background: Canvas; color: CanvasText; cursor: pointer; font: inherit; line-height: 1; min-block-size: 24px; padding: 2px 5px; }
+      .zapia-manager-row-controls { position: fixed; z-index: 2147483647 !important; display: inline-flex; align-items: center; gap: 4px; transform: translateY(-50%); padding: 2px 4px; border: 1px solid #62666d; border-radius: 6px; background: #222c; pointer-events: auto !important; }
+      .zapia-manager-button { border: 1px solid currentColor; border-radius: 4px; background: Canvas; color: CanvasText; cursor: pointer; font: inherit; line-height: 1; min-block-size: 24px; padding: 2px 5px; pointer-events: auto !important; }
       .zapia-manager-button:disabled { cursor: not-allowed; opacity: .55; }
-      .zapia-manager-select { inline-size: 15px; block-size: 15px; accent-color: #f5b700; }
-      .zapia-manager-toolbar { position: fixed; z-index: 2147483647; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #a0a0a0; border-radius: 8px; background: Canvas; color: CanvasText; box-shadow: 0 3px 16px #0004; font: 14px system-ui, sans-serif; }
-      .zapia-manager-toast { position: fixed; z-index: 2147483647; right: 16px; bottom: 76px; max-inline-size: min(420px, calc(100vw - 32px)); padding: 10px; border-radius: 6px; background: #222; color: #fff; font: 14px system-ui, sans-serif; }
+      .zapia-manager-select { inline-size: 15px; block-size: 15px; accent-color: #f5b700; pointer-events: auto !important; cursor: pointer; }
+      .zapia-manager-toolbar { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #a0a0a0; border-radius: 8px; background: Canvas; color: CanvasText; box-shadow: 0 3px 16px #0004; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
+      .zapia-manager-toast { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 76px; max-inline-size: min(420px, calc(100vw - 32px)); padding: 10px; border-radius: 6px; background: #222; color: #fff; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
       .zapia-manager-toast-error { background: #9f1d1d; }
       .zapia-manager-toast-warning { background: #7b5600; }
     `;
@@ -522,13 +548,12 @@
     if (!location.pathname.startsWith('/chat')) return;
     enableFlutterSemantics();
     installStyles();
+    syncLoop();
+  }
+
+  function syncLoop() {
     mountControls();
-    const observer = new MutationObserver((records) => {
-      if (needsRemount(records)) scheduleMount();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    window.addEventListener('resize', scheduleMount, { passive: true });
-    window.addEventListener('scroll', scheduleMount, { capture: true, passive: true });
+    requestAnimationFrame(syncLoop);
   }
 
   if (document.body) boot();
