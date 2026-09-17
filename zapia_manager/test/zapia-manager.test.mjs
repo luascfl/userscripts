@@ -32,6 +32,7 @@ test('known Flutter navigation labels are not treated as chat titles', () => {
   assert.equal(manager.isNavigationActionLabel('Novo Chat'), true);
   assert.equal(manager.isNavigationActionLabel('Radar 6'), true);
   assert.equal(manager.isNavigationActionLabel('Conversas'), true);
+  assert.equal(manager.isNavigationActionLabel('Indique e ganhe'), true);
   assert.equal(manager.isNavigationActionLabel('Outlook conectado e resumo de e-mails'), false);
 });
 

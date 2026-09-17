@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.18
+// @version      0.1.20
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -28,6 +28,7 @@
     'Radar',
     'Conectores',
     'Compartilhe e ganhe',
+    'Indique e ganhe',
     'Fixados',
     'Conversas',
   ]);
@@ -37,6 +38,7 @@
     'Agendados',
     'Conectores',
     'Compartilhe e ganhe',
+    'Indique e ganhe',
   ]);
   const EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/u;
   const MENU_BUTTON_PATTERN = /(?:menu|more|options|opções|mais|ações|actions)/i;
@@ -45,6 +47,7 @@
   const selectedChatIds = new Set();
   const staleControlTimestamps = new Map();
   const STALE_GRACE_MS = 400;
+  const HEADER_CLIP_TOP = 50;
   let observerScheduled = false;
 
   function normalizeSpace(value) {

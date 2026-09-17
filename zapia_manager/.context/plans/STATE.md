@@ -52,7 +52,7 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 
 ## Scroll and hover repair, 2026-09-16
 
-- Version 0.1.18 moves row controls into one fixed, overflow-clipped layer whose top is below the primary sidebar navigation and whose bottom is the profile footer. This prevents stale controls from crossing the visible chat region while Flutter recycles rows during virtual scrolling.
-- Controls remain directly positioned from each visible row’s `getBoundingClientRect()` on the animation-frame loop. Stale controls are removed immediately when their matching semantics row remains in the DOM, and retain the existing 400 ms grace period only when Flutter destroys that row for hover actions.
+- Version 0.1.20 places row controls in one fixed, overflow-clipped layer. Its top ends after the complete primary sidebar navigation, including `Indique e ganhe`; its bottom ends at the profile footer. This prevents controls from crossing the chat viewport during Flutter virtual scrolling.
+- Controls remain positioned from each visible row’s `getBoundingClientRect()` on the animation-frame loop. Stale controls are removed immediately when their matching semantics row remains in the DOM and retain the 400 ms grace period only when Flutter destroys a row for hover actions.
+- The connected Zapia browser confirmed the layer is bounded to x=0–280 and y=310–559, contains four rendered chat controls, and excludes navigation labels. Tampermonkey confirms Zapia Manager 0.1.20 is enabled.
 - `node --check zapia-manager.user.js` and `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures. `graphify update .` rebuilt 56 nodes and 108 edges.
-- The persistent Chrome verification profile reached `https://app.zapia.com/auth` after reload, so logged-in browser acceptance for this revision remains blocked pending a manual Zapia login.

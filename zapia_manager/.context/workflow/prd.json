@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": false,
-      "notes": "Version 0.1.18 uses an overflow-clipped control layer for Flutter virtual scrolling. Node contracts pass; browser acceptance remains blocked until the persistent Chrome profile is logged in to Zapia."
+      "notes": "Version 0.1.20 uses an overflow-clipped control layer, excludes every primary sidebar action, and passed node contracts plus connected Chrome visual verification."
     }
   ]
 }
