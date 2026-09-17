@@ -99,3 +99,9 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 - User reported that the whole manager disappeared after the 0.2.7 reload. Live CDP inspection found 11 valid sidebar chat rows, but Zapia also exposes a global header `Mais ações` control.
 - The unscoped hover guard mistook that header control for Flutter’s row-replacement state and skipped every panel render. Version 0.2.8 accepts hover state only within the sidebar chat viewport.
 - Tampermonkey saved 0.2.8. A live authenticated Chrome reload rendered the side panel with three visible chats, confirmed by DOM inspection and screenshot. `node --check` and 12 Node tests passed.
+
+## Fresh header-menu batch repair, 2026-09-17
+
+- User reported that the multiple-selection path still renamed only one chat. The prior flow clicked whichever header `Mais ações` control already existed after changing rows, so the next prefix could reopen the preceding chat’s menu.
+- Version 0.2.9 records the current header action before selecting each queued row and waits for Zapia to replace it. The resulting menu action is therefore tied to the selected row, not the prior chat.
+- Tampermonkey saved 0.2.9. A two-chat Chrome fixture with a persistent header-level action saved `✔ Alpha` and `✔ Bravo` in order. The connected browser closed its Zapia target before final live recheck.

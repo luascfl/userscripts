@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.8
+// @version      0.2.9
 // @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -371,8 +371,12 @@
       return;
     }
 
+    const previousMenuButton = semanticMenuButton();
     row.click();
-    const menuButton = await waitFor(semanticMenuButton, 'the native more-actions button');
+    const menuButton = await waitFor(() => {
+      const currentMenuButton = semanticMenuButton();
+      return currentMenuButton && currentMenuButton !== previousMenuButton ? currentMenuButton : null;
+    }, 'the selected chat native more-actions button');
     menuButton.click();
   }
 

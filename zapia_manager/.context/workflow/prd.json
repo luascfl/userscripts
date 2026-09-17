@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": false,
-      "notes": "Version 0.2.8 scopes hover detection to the Zapia chat sidebar. Version 0.2.7 treated the header’s global `Mais ações` button as a hovered sidebar chat and suppressed the entire manager panel. The panel now holds its existing list only when a `Mais ações` element appears inside the sidebar’s chat viewport. Node contracts passed, and a live authenticated Chrome reload rendered the panel with three visible chats."
+      "notes": "Version 0.2.9 fixes batch prefixing when Zapia keeps a header-level `Mais ações` button after switching chats. The action flow now snapshots that button before selecting a queued row and waits for Zapia to replace it, so it never opens the previous chat’s menu for the next selected chat. Node contracts and a two-chat fixture with the same persistent header-menu behavior passed; live panel re-verification was unavailable after the connected browser closed the Zapia tab."
     }
   ]
 }
