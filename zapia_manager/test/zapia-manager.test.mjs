@@ -32,6 +32,12 @@ test('current-chat shortcuts accept only the intended unmodified chords', () => 
   assert.equal(manager.currentChatShortcut({ altKey: true, shiftKey: true, ctrlKey: false, metaKey: false, repeat: true, code: 'KeyX' }), null);
 });
 
+test('shortcut configuration parses only modified supported keys', () => {
+  assert.deepEqual(manager.parseShortcut('Alt+Shift+Y'), { ctrlKey: false, altKey: true, shiftKey: true, metaKey: false, code: 'KeyY' });
+  assert.equal(manager.parseShortcut('Y'), null);
+  assert.equal(manager.parseShortcut('Alt+Shift+Escape'), null);
+});
+
 test('normalization supports text from browser controls', () => {
   assert.equal(manager.normalizeSpace('  Excluir\n chat  '), 'Excluir chat');
 });
