@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": true,
-      "notes": "Version 0.2.11 changes the requested action from preparing a dialog to deleting selected chats. Each queued row opens Zapia's own `Excluir conversa?` dialog, finds its exact `Excluir` confirmation within that dialog, confirms it, waits for the dialog to close, then continues to the next row. Live authenticated Chrome verification confirms the installed panel label and its one-at-a-time native deletion contract. The actual final confirmation was not exercised against a live chat during verification to avoid deleting user data."
+      "notes": "Version 0.2.12 deletes selected chats through Zapia's own `Excluir conversa?` dialog, where it finds and confirms the exact `Excluir` action before moving to the next row. Live investigation found that Zapia reuses the current chat's header `Mais ações` semantic element, so the action opener now waits for Flutter to render the selected chat instead of waiting for a replacement element that never arrives. The installed Tampermonkey source is 0.2.12; the destructive confirmation was not exercised against an unrelated visible chat during verification."
     }
   ]
 }

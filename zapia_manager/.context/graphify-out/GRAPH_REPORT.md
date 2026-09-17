@@ -1,11 +1,11 @@
 # Graph Report - zapia_manager  (2026-09-17)
 
 ## Corpus Check
-- 2 files · ~10,941 words
+- 2 files · ~10,931 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 57 nodes · 115 edges · 7 communities detected
+- 57 nodes · 114 edges · 7 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -23,7 +23,7 @@
 2. `normalizeSpace()` - 9 edges
 3. `applyPrefix()` - 7 edges
 4. `waitFor()` - 6 edges
-5. `openNativeActions()` - 6 edges
+5. `openNativeActions()` - 5 edges
 6. `queueFromSelection()` - 5 edges
 7. `deleteSelectedChats()` - 5 edges
 8. `renderManagerPanel()` - 5 edges
@@ -35,7 +35,7 @@
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 2 → community 3_
 - `visibleSemanticMenuAction()` --calls--> `semanticButtons()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 5 → community 6_
-- `openNativeActions()` --calls--> `semanticMenuButton()`  [EXTRACTED]
+- `applyPrefix()` --calls--> `visibleSaveAction()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 5 → community 1_
 - `applyPrefixToSelectedChats()` --calls--> `rediscoverAndApply()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 2 → community 1_
