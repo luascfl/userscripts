@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": false,
-      "notes": "Version 0.1.20 uses an overflow-clipped control layer, excludes every primary sidebar action, and passed node contracts plus connected Chrome visual verification."
+      "notes": "Version 0.1.21 replaces per-row prefix buttons with a single-selection checkbox and bulk prefix actions in the toolbar. Node contracts pass; final visual smoke test is pending because Zapia remained on its loading screen after reload."
     }
   ]
 }

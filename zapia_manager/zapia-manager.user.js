@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.20
+// @version      0.1.21
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -453,11 +453,7 @@
       renderToolbar();
     });
 
-    controls.append(
-      select,
-      button('✔', `Adicionar prefixo ✔ a ${describeRow(row)}`, () => rediscoverAndApply(id, '✔ ')),
-      button('🟡', `Adicionar prefixo 🟡 a ${describeRow(row)}`, () => rediscoverAndApply(id, '🟡 ')),
-    );
+    controls.append(select);
     layer.append(controls);
     positionRowControls(controls, row, viewport);
   }
@@ -466,6 +462,19 @@
     const rowsById = new Map(discoverChatRows().map((row) => [chatIdentity(row), row]));
     deletionQueue = queueVisibleSelectedChatIds(selectedChatIds, rowsById);
     return rowsById;
+  }
+
+  async function applyPrefixToSelectedChats(prefix) {
+    const rowsById = queueFromSelection();
+    if (!deletionQueue.length) throw new Error('Selecione pelo menos um chat visível.');
+
+    for (const id of deletionQueue) {
+      if (!rowsById.has(id)) continue;
+      await rediscoverAndApply(id, prefix);
+      selectedChatIds.delete(id);
+    }
+    deletionQueue = [];
+    mountControls();
   }
 
   async function prepareNextNativeDelete() {
@@ -485,10 +494,14 @@
 
   function renderToolbar() {
     const count = selectedChatIds.size;
-    const state = `${count}:${deletionQueue.length}`;
     let toolbar = document.querySelector('[data-zapia-manager-toolbar]');
-    if (toolbar?.dataset.zapiaManagerState === state) return;
+    if (count === 0) {
+      toolbar?.remove();
+      return;
+    }
 
+    const state = `${count}:${deletionQueue.length}`;
+    if (toolbar?.dataset.zapiaManagerState === state) return;
     if (!toolbar) {
       toolbar = document.createElement('aside');
       toolbar.className = 'zapia-manager-toolbar';
@@ -503,21 +516,24 @@
     status.textContent = `${count} chat${count === 1 ? '' : 's'} selecionado${count === 1 ? '' : 's'}`;
     toolbar.append(status);
 
+    const prefixOk = button('✔ Prefixar', 'Aplica o prefixo ✔ aos chats visíveis selecionados', () => applyPrefixToSelectedChats('✔ '));
+    toolbar.append(prefixOk);
+
+    const prefixYellow = button('🟡 Prefixar', 'Aplica o prefixo 🟡 aos chats visíveis selecionados', () => applyPrefixToSelectedChats('🟡 '));
+    toolbar.append(prefixYellow);
+
     const prepare = button(
       deletionQueue.length ? `Abrir próximo (${deletionQueue.length})` : 'Abrir exclusão nativa',
       'Abre somente o primeiro diálogo nativo de exclusão, sem confirmá-lo',
       prepareNextNativeDelete,
     );
-    prepare.disabled = count === 0;
     toolbar.append(prepare);
 
-    const clear = button('Limpar seleção', 'Limpar seleção de chats', () => {
+    toolbar.append(button('Limpar seleção', 'Limpar seleção de chats', () => {
       selectedChatIds.clear();
       deletionQueue = [];
       mountControls();
-    });
-    clear.disabled = count === 0;
-    toolbar.append(clear);
+    }));
   }
 
   function removeToolbar() {
@@ -596,11 +612,11 @@
     const style = document.createElement('style');
     style.textContent = `
       .zapia-manager-layer { position: fixed; z-index: 2147483647 !important; overflow: hidden; pointer-events: none; }
-      .zapia-manager-row-controls { position: absolute; display: inline-flex; align-items: center; gap: 4px; transform: translateY(-50%); padding: 2px 4px; border: 1px solid #62666d; border-radius: 6px; background: #222c; pointer-events: auto !important; }
+      .zapia-manager-row-controls { position: absolute; inline-size: 18px; block-size: 18px; transform: translateY(-50%); pointer-events: auto !important; }
       .zapia-manager-button { border: 1px solid currentColor; border-radius: 4px; background: Canvas; color: CanvasText; cursor: pointer; font: inherit; line-height: 1; min-block-size: 24px; padding: 2px 5px; pointer-events: auto !important; }
       .zapia-manager-button:disabled { cursor: not-allowed; opacity: .55; }
-      .zapia-manager-select { inline-size: 15px; block-size: 15px; accent-color: #f5b700; pointer-events: auto !important; cursor: pointer; }
-      .zapia-manager-toolbar { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #a0a0a0; border-radius: 8px; background: Canvas; color: CanvasText; box-shadow: 0 3px 16px #0004; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
+      .zapia-manager-select { box-sizing: border-box; inline-size: 18px; block-size: 18px; margin: 0; accent-color: #f5b700; cursor: pointer; }
+      .zapia-manager-toolbar { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 16px; display: flex; max-inline-size: calc(100vw - 32px); flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; border: 1px solid #a0a0a0; border-radius: 8px; background: Canvas; color: CanvasText; box-shadow: 0 3px 16px #0004; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
       .zapia-manager-toast { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 76px; max-inline-size: min(420px, calc(100vw - 32px)); padding: 10px; border-radius: 6px; background: #222; color: #fff; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
       .zapia-manager-toast-error { background: #9f1d1d; }
       .zapia-manager-toast-warning { background: #7b5600; }

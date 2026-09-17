@@ -9,7 +9,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L1",
       "id": "zapia_manager_user_js",
-      "community": 3,
+      "community": 2,
       "norm_label": "zapia-manager.user.js"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L53",
       "id": "zapia_manager_user_normalizespace",
-      "community": 5,
+      "community": 0,
       "norm_label": "normalizespace()"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L57",
       "id": "zapia_manager_user_isnavigationactionlabel",
-      "community": 5,
+      "community": 0,
       "norm_label": "isnavigationactionlabel()"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L63",
       "id": "zapia_manager_user_cleanchattitle",
-      "community": 2,
+      "community": 0,
       "norm_label": "cleanchattitle()"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L78",
       "id": "zapia_manager_user_canactivatedeletecandidate",
-      "community": 5,
+      "community": 0,
       "norm_label": "canactivatedeletecandidate()"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L82",
       "id": "zapia_manager_user_selectrootchatrows",
-      "community": 4,
+      "community": 3,
       "norm_label": "selectrootchatrows()"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L86",
       "id": "zapia_manager_user_queuevisibleselectedchatids",
-      "community": 4,
+      "community": 3,
       "norm_label": "queuevisibleselectedchatids()"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L90",
       "id": "zapia_manager_user_ismanagednode",
-      "community": 3,
+      "community": 2,
       "norm_label": "ismanagednode()"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L95",
       "id": "zapia_manager_user_needsremount",
-      "community": 3,
+      "community": 2,
       "norm_label": "needsremount()"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L103",
       "id": "zapia_manager_user_shouldshowchatmanager",
-      "community": 0,
+      "community": 5,
       "norm_label": "shouldshowchatmanager()"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L107",
       "id": "zapia_manager_user_requestzapiacacherecovery",
-      "community": 3,
+      "community": 2,
       "norm_label": "requestzapiacacherecovery()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L142",
       "id": "zapia_manager_user_isvisible",
-      "community": 3,
+      "community": 2,
       "norm_label": "isvisible()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L148",
       "id": "zapia_manager_user_enablefluttersemantics",
-      "community": 0,
+      "community": 7,
       "norm_label": "enablefluttersemantics()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L157",
       "id": "zapia_manager_user_chatidentity",
-      "community": 2,
+      "community": 0,
       "norm_label": "chatidentity()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L164",
       "id": "zapia_manager_user_getchatviewport",
-      "community": 0,
+      "community": 5,
       "norm_label": "getchatviewport()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L192",
       "id": "zapia_manager_user_isflutterchatrow",
-      "community": 5,
+      "community": 0,
       "norm_label": "isflutterchatrow()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L205",
       "id": "zapia_manager_user_discoverchatrows",
-      "community": 4,
+      "community": 3,
       "norm_label": "discoverchatrows()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L214",
       "id": "zapia_manager_user_describerow",
-      "community": 2,
+      "community": 0,
       "norm_label": "describerow()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L220",
       "id": "zapia_manager_user_semanticlabel",
-      "community": 5,
+      "community": 0,
       "norm_label": "semanticlabel()"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L225",
       "id": "zapia_manager_user_semanticbuttons",
-      "community": 6,
+      "community": 4,
       "norm_label": "semanticbuttons()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L230",
       "id": "zapia_manager_user_semanticbutton",
-      "community": 8,
+      "community": 4,
       "norm_label": "semanticbutton()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L264",
       "id": "zapia_manager_user_visiblemenus",
-      "community": 6,
+      "community": 4,
       "norm_label": "visiblemenus()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L269",
       "id": "zapia_manager_user_visiblesemanticmenuaction",
-      "community": 6,
+      "community": 4,
       "norm_label": "visiblesemanticmenuaction()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L278",
       "id": "zapia_manager_user_visiblemenuaction",
-      "community": 6,
+      "community": 4,
       "norm_label": "visiblemenuaction()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L287",
       "id": "zapia_manager_user_nativerenameinput",
-      "community": 3,
+      "community": 2,
       "norm_label": "nativerenameinput()"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L297",
       "id": "zapia_manager_user_nativedeletedialogopen",
-      "community": 4,
+      "community": 6,
       "norm_label": "nativedeletedialogopen()"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L321",
       "id": "zapia_manager_user_visiblesaveaction",
-      "community": 8,
+      "community": 4,
       "norm_label": "visiblesaveaction()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L375",
       "id": "zapia_manager_user_button",
-      "community": 2,
+      "community": 6,
       "norm_label": "button()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L395",
       "id": "zapia_manager_user_rowcontrolsfor",
-      "community": 2,
+      "community": 0,
       "norm_label": "rowcontrolsfor()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L400",
       "id": "zapia_manager_user_controllayer",
-      "community": 0,
+      "community": 5,
       "norm_label": "controllayer()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L417",
       "id": "zapia_manager_user_positionrowcontrols",
-      "community": 2,
+      "community": 0,
       "norm_label": "positionrowcontrols()"
     },
     {
@@ -369,124 +369,133 @@
       "source_file": "zapia-manager.user.js",
       "source_location": "L428",
       "id": "zapia_manager_user_mountrowcontrols",
-      "community": 2,
+      "community": 0,
       "norm_label": "mountrowcontrols()"
     },
     {
       "label": "queueFromSelection()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L465",
+      "source_location": "L461",
       "id": "zapia_manager_user_queuefromselection",
-      "community": 4,
+      "community": 3,
       "norm_label": "queuefromselection()"
+    },
+    {
+      "label": "applyPrefixToSelectedChats()",
+      "file_type": "code",
+      "source_file": "zapia-manager.user.js",
+      "source_location": "L467",
+      "id": "zapia_manager_user_applyprefixtoselectedchats",
+      "community": 3,
+      "norm_label": "applyprefixtoselectedchats()"
     },
     {
       "label": "prepareNextNativeDelete()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L471",
+      "source_location": "L480",
       "id": "zapia_manager_user_preparenextnativedelete",
-      "community": 4,
+      "community": 6,
       "norm_label": "preparenextnativedelete()"
     },
     {
       "label": "renderToolbar()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L486",
+      "source_location": "L495",
       "id": "zapia_manager_user_rendertoolbar",
-      "community": 2,
+      "community": 6,
       "norm_label": "rendertoolbar()"
     },
     {
       "label": "removeToolbar()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L523",
+      "source_location": "L539",
       "id": "zapia_manager_user_removetoolbar",
-      "community": 0,
+      "community": 5,
       "norm_label": "removetoolbar()"
     },
     {
       "label": "rediscoverAndApply()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L527",
+      "source_location": "L543",
       "id": "zapia_manager_user_rediscoverandapply",
-      "community": 4,
+      "community": 3,
       "norm_label": "rediscoverandapply()"
     },
     {
       "label": "isRowStillInDom()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L537",
+      "source_location": "L553",
       "id": "zapia_manager_user_isrowstillindom",
-      "community": 7,
+      "community": 8,
       "norm_label": "isrowstillindom()"
     },
     {
       "label": "removeStaleRowControls()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L546",
+      "source_location": "L562",
       "id": "zapia_manager_user_removestalerowcontrols",
-      "community": 7,
+      "community": 8,
       "norm_label": "removestalerowcontrols()"
     },
     {
       "label": "removeRowControls()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L565",
+      "source_location": "L581",
       "id": "zapia_manager_user_removerowcontrols",
-      "community": 0,
+      "community": 5,
       "norm_label": "removerowcontrols()"
     },
     {
       "label": "mountControls()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L570",
+      "source_location": "L586",
       "id": "zapia_manager_user_mountcontrols",
-      "community": 0,
+      "community": 5,
       "norm_label": "mountcontrols()"
     },
     {
       "label": "scheduleMount()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L586",
+      "source_location": "L602",
       "id": "zapia_manager_user_schedulemount",
-      "community": 3,
+      "community": 2,
       "norm_label": "schedulemount()"
     },
     {
       "label": "installStyles()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L595",
+      "source_location": "L611",
       "id": "zapia_manager_user_installstyles",
-      "community": 0,
+      "community": 7,
       "norm_label": "installstyles()"
     },
     {
       "label": "boot()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L611",
+      "source_location": "L627",
       "id": "zapia_manager_user_boot",
-      "community": 0,
+      "community": 7,
       "norm_label": "boot()"
     },
     {
       "label": "syncLoop()",
       "file_type": "code",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L618",
+      "source_location": "L634",
       "id": "zapia_manager_user_syncloop",
-      "community": 0,
+      "community": 7,
       "norm_label": "syncloop()"
     },
     {
@@ -993,7 +1002,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L465",
+      "source_location": "L461",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_queuefromselection",
@@ -1005,7 +1014,19 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L471",
+      "source_location": "L467",
+      "weight": 1.0,
+      "_src": "zapia_manager_user_js",
+      "_tgt": "zapia_manager_user_applyprefixtoselectedchats",
+      "source": "zapia_manager_user_js",
+      "target": "zapia_manager_user_applyprefixtoselectedchats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "zapia-manager.user.js",
+      "source_location": "L480",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_preparenextnativedelete",
@@ -1017,7 +1038,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L486",
+      "source_location": "L495",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_rendertoolbar",
@@ -1029,7 +1050,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L523",
+      "source_location": "L539",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_removetoolbar",
@@ -1041,7 +1062,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L527",
+      "source_location": "L543",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_rediscoverandapply",
@@ -1053,7 +1074,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L537",
+      "source_location": "L553",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_isrowstillindom",
@@ -1065,7 +1086,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L546",
+      "source_location": "L562",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_removestalerowcontrols",
@@ -1077,7 +1098,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L565",
+      "source_location": "L581",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_removerowcontrols",
@@ -1089,7 +1110,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L570",
+      "source_location": "L586",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_mountcontrols",
@@ -1101,7 +1122,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L586",
+      "source_location": "L602",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_schedulemount",
@@ -1113,7 +1134,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L595",
+      "source_location": "L611",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_installstyles",
@@ -1125,7 +1146,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L611",
+      "source_location": "L627",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_boot",
@@ -1137,7 +1158,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L618",
+      "source_location": "L634",
       "weight": 1.0,
       "_src": "zapia_manager_user_js",
       "_tgt": "zapia_manager_user_syncloop",
@@ -1293,7 +1314,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L467",
+      "source_location": "L463",
       "weight": 1.0,
       "_src": "zapia_manager_user_queuefromselection",
       "_tgt": "zapia_manager_user_queuevisibleselectedchatids",
@@ -1305,7 +1326,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L574",
+      "source_location": "L590",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_shouldshowchatmanager",
@@ -1317,7 +1338,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L571",
+      "source_location": "L587",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_enablefluttersemantics",
@@ -1329,7 +1350,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L613",
+      "source_location": "L629",
       "weight": 1.0,
       "_src": "zapia_manager_user_boot",
       "_tgt": "zapia_manager_user_enablefluttersemantics",
@@ -1353,7 +1374,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L572",
+      "source_location": "L588",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_getchatviewport",
@@ -1365,7 +1386,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L466",
+      "source_location": "L462",
       "weight": 1.0,
       "_src": "zapia_manager_user_queuefromselection",
       "_tgt": "zapia_manager_user_discoverchatrows",
@@ -1377,7 +1398,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L528",
+      "source_location": "L544",
       "weight": 1.0,
       "_src": "zapia_manager_user_rediscoverandapply",
       "_tgt": "zapia_manager_user_discoverchatrows",
@@ -1389,7 +1410,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L573",
+      "source_location": "L589",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_discoverchatrows",
@@ -1521,7 +1542,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L472",
+      "source_location": "L481",
       "weight": 1.0,
       "_src": "zapia_manager_user_preparenextnativedelete",
       "_tgt": "zapia_manager_user_nativedeletedialogopen",
@@ -1593,7 +1614,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L534",
+      "source_location": "L550",
       "weight": 1.0,
       "_src": "zapia_manager_user_rediscoverandapply",
       "_tgt": "zapia_manager_user_applyprefix",
@@ -1605,7 +1626,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L480",
+      "source_location": "L489",
       "weight": 1.0,
       "_src": "zapia_manager_user_preparenextnativedelete",
       "_tgt": "zapia_manager_user_opennativedelete",
@@ -1617,19 +1638,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L458",
-      "weight": 1.0,
-      "_src": "zapia_manager_user_mountrowcontrols",
-      "_tgt": "zapia_manager_user_button",
-      "source": "zapia_manager_user_button",
-      "target": "zapia_manager_user_mountrowcontrols",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "source_file": "zapia-manager.user.js",
-      "source_location": "L506",
+      "source_location": "L519",
       "weight": 1.0,
       "_src": "zapia_manager_user_rendertoolbar",
       "_tgt": "zapia_manager_user_button",
@@ -1653,7 +1662,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L580",
+      "source_location": "L596",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_controllayer",
@@ -1677,7 +1686,19 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L476",
+      "source_location": "L468",
+      "weight": 1.0,
+      "_src": "zapia_manager_user_applyprefixtoselectedchats",
+      "_tgt": "zapia_manager_user_queuefromselection",
+      "source": "zapia_manager_user_queuefromselection",
+      "target": "zapia_manager_user_applyprefixtoselectedchats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "zapia-manager.user.js",
+      "source_location": "L485",
       "weight": 1.0,
       "_src": "zapia_manager_user_preparenextnativedelete",
       "_tgt": "zapia_manager_user_queuefromselection",
@@ -1689,7 +1710,31 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L483",
+      "source_location": "L473",
+      "weight": 1.0,
+      "_src": "zapia_manager_user_applyprefixtoselectedchats",
+      "_tgt": "zapia_manager_user_rediscoverandapply",
+      "source": "zapia_manager_user_applyprefixtoselectedchats",
+      "target": "zapia_manager_user_rediscoverandapply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "zapia-manager.user.js",
+      "source_location": "L477",
+      "weight": 1.0,
+      "_src": "zapia_manager_user_applyprefixtoselectedchats",
+      "_tgt": "zapia_manager_user_mountcontrols",
+      "source": "zapia_manager_user_applyprefixtoselectedchats",
+      "target": "zapia_manager_user_mountcontrols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "zapia-manager.user.js",
+      "source_location": "L492",
       "weight": 1.0,
       "_src": "zapia_manager_user_preparenextnativedelete",
       "_tgt": "zapia_manager_user_rendertoolbar",
@@ -1701,7 +1746,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L583",
+      "source_location": "L599",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_rendertoolbar",
@@ -1713,7 +1758,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L576",
+      "source_location": "L592",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_removetoolbar",
@@ -1725,7 +1770,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L553",
+      "source_location": "L569",
       "weight": 1.0,
       "_src": "zapia_manager_user_removestalerowcontrols",
       "_tgt": "zapia_manager_user_isrowstillindom",
@@ -1737,7 +1782,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L581",
+      "source_location": "L597",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_removestalerowcontrols",
@@ -1749,7 +1794,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L575",
+      "source_location": "L591",
       "weight": 1.0,
       "_src": "zapia_manager_user_mountcontrols",
       "_tgt": "zapia_manager_user_removerowcontrols",
@@ -1761,7 +1806,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L619",
+      "source_location": "L635",
       "weight": 1.0,
       "_src": "zapia_manager_user_syncloop",
       "_tgt": "zapia_manager_user_mountcontrols",
@@ -1773,7 +1818,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L614",
+      "source_location": "L630",
       "weight": 1.0,
       "_src": "zapia_manager_user_boot",
       "_tgt": "zapia_manager_user_installstyles",
@@ -1785,7 +1830,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "zapia-manager.user.js",
-      "source_location": "L615",
+      "source_location": "L631",
       "weight": 1.0,
       "_src": "zapia_manager_user_boot",
       "_tgt": "zapia_manager_user_syncloop",
