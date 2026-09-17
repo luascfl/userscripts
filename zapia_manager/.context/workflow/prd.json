@@ -15,8 +15,8 @@
         "Fixture tests cover prefix replacement, row discovery, selection, and exclusion of final confirmation buttons."
       ],
       "priority": "high",
-      "passes": false,
-      "notes": "Version 0.2.9 fixes batch prefixing when Zapia keeps a header-level `Mais ações` button after switching chats. The action flow now snapshots that button before selecting a queued row and waits for Zapia to replace it, so it never opens the previous chat’s menu for the next selected chat. Node contracts and a two-chat fixture with the same persistent header-menu behavior passed; live panel re-verification was unavailable after the connected browser closed the Zapia tab."
+      "passes": true,
+      "notes": "Version 0.2.9 fixes batch prefixing when Zapia keeps a header-level `Mais ações` button after switching chats. The action flow snapshots that button before selecting a queued row and waits for Zapia to replace it, so it never opens the previous chat’s menu for the next selected chat. Live authenticated Chrome verification selected `🟡 Zotero` and `🟡 Ifood`, applied `✔` to both, cleared selection to zero, produced no error toast, and left no native dialog open. Guarded deletion remains one native dialog at a time without final confirmation."
     }
   ]
 }
