@@ -34,6 +34,12 @@ test('only exact native more-actions labels can open a chat menu', () => {
   assert.equal(manager.isMenuButtonLabel('Informações do chat'), false);
 });
 
+test('Flutter hover action is never treated as a chat title', () => {
+  assert.equal(manager.isHoverActionLabel('Mais ações'), true);
+  assert.equal(manager.isHoverActionLabel('More actions'), true);
+  assert.equal(manager.isHoverActionLabel('Informações do chat'), false);
+});
+
 test('known Flutter navigation labels are not treated as chat titles', () => {
   assert.equal(manager.isNavigationActionLabel('Novo Chat'), true);
   assert.equal(manager.isNavigationActionLabel('Radar 6'), true);

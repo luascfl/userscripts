@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.5
+// @version      0.2.7
 // @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -44,6 +44,7 @@
   const MENU_BUTTON_PATTERN = /^(?:menu|more|options|opções|mais ações|actions)$/i;
   const EDIT_PATTERN = /(?:renomear|editar(?:\s+(?:nome|chat|conversa))?|rename|edit(?:\s+(?:name|chat|conversation))?)/i;
   const DELETE_PATTERN = /(?:excluir|apagar|deletar|delete|remove)/i;
+  const HOVER_ACTION_PATTERN = /^(?:mais ações|more actions)$/i;
   const selectedChatIds = new Set();
   let deletionQueue = [];
   const HEADER_CLIP_TOP = 50;
@@ -56,6 +57,10 @@
 
   function isMenuButtonLabel(label) {
     return MENU_BUTTON_PATTERN.test(normalizeSpace(label));
+  }
+
+  function isHoverActionLabel(label) {
+    return HOVER_ACTION_PATTERN.test(normalizeSpace(label));
   }
 
   function isNavigationActionLabel(label) {
@@ -126,6 +131,7 @@
     stripManagedPrefix,
     withPrefix,
     canActivateDeleteCandidate,
+    isHoverActionLabel,
     isMenuButtonLabel,
     selectRootChatRows,
     queueVisibleSelectedChatIds,
@@ -199,10 +205,9 @@
     if (!viewport.nav.contains(row)) return false;
 
     const label = normalizeSpace(row.textContent || row.getAttribute('aria-label') || '');
-    if (isNavigationActionLabel(label)) return false;
+    if (isNavigationActionLabel(label) || isHoverActionLabel(label)) return false;
 
     const rowRect = row.getBoundingClientRect();
-    if (Math.abs(rowRect.left - viewport.navRect.left) > 5) return false;
     if (rowRect.height < 20 || rowRect.height > 100) return false;
     return rowRect.top >= viewport.top && rowRect.bottom <= viewport.bottom;
   }
@@ -293,13 +298,18 @@
   }
 
   function nativeRenameInput() {
-    const htmlDialog = [...document.querySelectorAll('dialog, [role="dialog"], [data-radix-dialog-content]')]
+    const dialog = [...document.querySelectorAll('dialog, [role="dialog"], [data-radix-dialog-content]')]
       .filter(isVisible)
-      .find((dialog) => dialog.querySelector('input:not([type="checkbox"]):not([type="radio"]), textarea'));
-    if (htmlDialog) return htmlDialog.querySelector('input:not([type="checkbox"]):not([type="radio"]), textarea');
+      .find((candidate) => candidate.querySelector('input:not([type="checkbox"]):not([type="radio"]), textarea'));
+    if (dialog) return dialog.querySelector('input:not([type="checkbox"]):not([type="radio"]), textarea');
 
-    return [...document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]), textarea')]
-      .find((input) => isVisible(input) && !input.disabled && input.getBoundingClientRect().width > 0) ?? null;
+    const focused = document.activeElement;
+    if (
+      (focused instanceof HTMLInputElement || focused instanceof HTMLTextAreaElement)
+      && isVisible(focused)
+      && !focused.closest('[data-zapia-manager-control]')
+    ) return focused;
+    return null;
   }
 
   function nativeDeleteDialogOpen() {
@@ -368,7 +378,10 @@
 
     setInputValue(input, withPrefix(input.value, prefix));
     saveAction.click();
-    await waitFor(() => !nativeRenameInput(), 'the native rename dialog to close');
+    await waitFor(
+      () => !input.isConnected || !isVisible(input),
+      'the native rename dialog to close',
+    );
   }
 
   async function openNativeDelete(row) {
@@ -511,7 +524,7 @@
     const prefixYellow = button('🟡 Prefixar', 'Aplica o prefixo 🟡 aos chats visíveis selecionados', () => applyPrefixToSelectedChats('🟡 '));
     prefixYellow.disabled = !hasSelection;
     const prepare = button(
-      hasSelection ? `Abrir próxima exclusão (${selectedChatIds.size})` : 'Abrir exclusão nativa',
+      'Abrir exclusão nativa',
       'Abre somente um diálogo nativo por vez, sem confirmá-lo',
       prepareNextNativeDelete,
     );
@@ -543,9 +556,10 @@
     const viewport = getChatViewport();
     const rows = discoverChatRows(viewport);
     if (!shouldShowChatManager(rows)) {
-      removeManagerPanel();
+      if (!semanticButtons().some((element) => isHoverActionLabel(semanticLabel(element)))) removeManagerPanel();
       return;
     }
+    if (semanticButtons().some((element) => isHoverActionLabel(semanticLabel(element)))) return;
 
     renderManagerPanel(rows);
   }
