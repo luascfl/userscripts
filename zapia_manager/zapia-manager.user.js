@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.21
-// @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
+// @version      0.2.0
+// @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
 // @run-at       document-start
@@ -45,8 +45,6 @@
   const EDIT_PATTERN = /(?:renomear|editar(?:\s+(?:nome|chat|conversa))?|rename|edit(?:\s+(?:name|chat|conversation))?)/i;
   const DELETE_PATTERN = /(?:excluir|apagar|deletar|delete|remove)/i;
   const selectedChatIds = new Set();
-  const staleControlTimestamps = new Map();
-  const STALE_GRACE_MS = 400;
   const HEADER_CLIP_TOP = 50;
   let observerScheduled = false;
 
@@ -89,7 +87,7 @@
 
   function isManagedNode(node) {
     const element = node?.nodeType === 1 ? node : node?.parentElement;
-    return Boolean(element?.closest?.('[data-zapia-manager-control], [data-zapia-manager-toolbar]'));
+    return Boolean(element?.closest?.('[data-zapia-manager-control]'));
   }
 
   function needsRemount(records) {
@@ -204,7 +202,7 @@
 
   function discoverChatRows(viewport = getChatViewport()) {
     const candidates = [...document.querySelectorAll(CHAT_ROW_SELECTORS.join(','))]
-      .filter((row) => isVisible(row) && !row.closest('[data-zapia-manager-toolbar]'))
+      .filter((row) => isVisible(row) && !row.closest('[data-zapia-manager-control]'))
       .filter((row) => normalizeSpace(row.textContent).length > 0)
       .filter((row) => isFlutterChatRow(row, viewport));
 
@@ -392,72 +390,6 @@
     return element;
   }
 
-  function rowControlsFor(id) {
-    return [...document.querySelectorAll('[data-zapia-manager-controls]')]
-      .find((controls) => controls.dataset.zapiaManagerChatId === id) ?? null;
-  }
-
-  function controlLayer(viewport) {
-    let layer = document.querySelector('[data-zapia-manager-layer]');
-    if (!layer) {
-      layer = document.createElement('div');
-      layer.className = 'zapia-manager-layer';
-      layer.dataset.zapiaManagerLayer = 'true';
-      layer.dataset.zapiaManagerControl = 'true';
-      document.body.append(layer);
-    }
-
-    layer.style.left = `${viewport.navRect.left}px`;
-    layer.style.top = `${viewport.top}px`;
-    layer.style.width = `${viewport.navRect.width}px`;
-    layer.style.height = `${Math.max(0, viewport.bottom - viewport.top)}px`;
-    return layer;
-  }
-
-  function positionRowControls(controls, row, viewport) {
-    const rect = row.getBoundingClientRect();
-    const targetLeft = Math.max(4, viewport.navRect.width - controls.offsetWidth - 6);
-    const targetTop = rect.top + rect.height / 2 - viewport.top;
-    const currentLeft = parseFloat(controls.style.left);
-    const currentTop = parseFloat(controls.style.top);
-
-    if (Number.isNaN(currentLeft) || Math.abs(currentLeft - targetLeft) > 0.5) controls.style.left = `${targetLeft}px`;
-    if (Number.isNaN(currentTop) || Math.abs(currentTop - targetTop) > 0.5) controls.style.top = `${targetTop}px`;
-  }
-
-  function mountRowControls(row, viewport, layer) {
-    const id = chatIdentity(row);
-    let controls = rowControlsFor(id);
-    if (controls) {
-      controls.querySelector('.zapia-manager-select').checked = selectedChatIds.has(id);
-      positionRowControls(controls, row, viewport);
-      return;
-    }
-
-    controls = document.createElement('span');
-    controls.className = 'zapia-manager-row-controls';
-    controls.dataset.zapiaManagerControls = 'true';
-    controls.dataset.zapiaManagerControl = 'true';
-    controls.dataset.zapiaManagerChatId = id;
-
-    const select = document.createElement('input');
-    select.type = 'checkbox';
-    select.className = 'zapia-manager-select';
-    select.dataset.zapiaManagerControl = 'true';
-    select.checked = selectedChatIds.has(id);
-    select.setAttribute('aria-label', `Selecionar ${describeRow(row)}`);
-    select.addEventListener('click', (event) => event.stopPropagation());
-    select.addEventListener('change', () => {
-      if (select.checked) selectedChatIds.add(id);
-      else selectedChatIds.delete(id);
-      renderToolbar();
-    });
-
-    controls.append(select);
-    layer.append(controls);
-    positionRowControls(controls, row, viewport);
-  }
-
   function queueFromSelection() {
     const rowsById = new Map(discoverChatRows().map((row) => [chatIdentity(row), row]));
     deletionQueue = queueVisibleSelectedChatIds(selectedChatIds, rowsById);
@@ -489,55 +421,77 @@
     await openNativeDelete(row);
     selectedChatIds.delete(nextId);
     deletionQueue.shift();
-    renderToolbar();
+    mountControls();
   }
 
-  function renderToolbar() {
-    const count = selectedChatIds.size;
-    let toolbar = document.querySelector('[data-zapia-manager-toolbar]');
-    if (count === 0) {
-      toolbar?.remove();
-      return;
+  function renderManagerPanel(rows) {
+    const state = rows.map((row) => `${chatIdentity(row)}:${selectedChatIds.has(chatIdentity(row))}`).join('\n');
+    let panel = document.querySelector('[data-zapia-manager-panel]');
+    if (panel?.dataset.zapiaManagerState === state) return;
+    if (!panel) {
+      panel = document.createElement('aside');
+      panel.className = 'zapia-manager-panel';
+      panel.dataset.zapiaManagerPanel = 'true';
+      panel.dataset.zapiaManagerControl = 'true';
+      panel.setAttribute('aria-live', 'polite');
+      document.body.append(panel);
     }
 
-    const state = `${count}:${deletionQueue.length}`;
-    if (toolbar?.dataset.zapiaManagerState === state) return;
-    if (!toolbar) {
-      toolbar = document.createElement('aside');
-      toolbar.className = 'zapia-manager-toolbar';
-      toolbar.dataset.zapiaManagerToolbar = 'true';
-      toolbar.setAttribute('aria-live', 'polite');
-      document.body.append(toolbar);
+    panel.dataset.zapiaManagerState = state;
+    panel.replaceChildren();
+
+    const heading = document.createElement('div');
+    heading.className = 'zapia-manager-panel-heading';
+    const title = document.createElement('strong');
+    title.textContent = 'Zapia Manager';
+    const summary = document.createElement('span');
+    summary.textContent = `${rows.length} visíveis · ${selectedChatIds.size} selecionado${selectedChatIds.size === 1 ? '' : 's'}`;
+    heading.append(title, summary);
+    panel.append(heading);
+
+    const list = document.createElement('div');
+    list.className = 'zapia-manager-chat-list';
+    for (const row of rows) {
+      const id = chatIdentity(row);
+      const option = document.createElement('label');
+      option.className = 'zapia-manager-chat-option';
+      const select = document.createElement('input');
+      select.type = 'checkbox';
+      select.checked = selectedChatIds.has(id);
+      select.setAttribute('aria-label', `Selecionar ${describeRow(row)}`);
+      select.addEventListener('change', () => {
+        if (select.checked) selectedChatIds.add(id);
+        else selectedChatIds.delete(id);
+        renderManagerPanel(rows);
+      });
+      const label = document.createElement('span');
+      label.textContent = describeRow(row);
+      option.append(select, label);
+      list.append(option);
     }
+    panel.append(list);
 
-    toolbar.dataset.zapiaManagerState = state;
-    toolbar.replaceChildren();
-    const status = document.createElement('strong');
-    status.textContent = `${count} chat${count === 1 ? '' : 's'} selecionado${count === 1 ? '' : 's'}`;
-    toolbar.append(status);
-
+    const actions = document.createElement('div');
+    actions.className = 'zapia-manager-panel-actions';
+    const hasSelection = selectedChatIds.size > 0;
     const prefixOk = button('✔ Prefixar', 'Aplica o prefixo ✔ aos chats visíveis selecionados', () => applyPrefixToSelectedChats('✔ '));
-    toolbar.append(prefixOk);
-
+    prefixOk.disabled = !hasSelection;
     const prefixYellow = button('🟡 Prefixar', 'Aplica o prefixo 🟡 aos chats visíveis selecionados', () => applyPrefixToSelectedChats('🟡 '));
-    toolbar.append(prefixYellow);
-
-    const prepare = button(
-      deletionQueue.length ? `Abrir próximo (${deletionQueue.length})` : 'Abrir exclusão nativa',
-      'Abre somente o primeiro diálogo nativo de exclusão, sem confirmá-lo',
-      prepareNextNativeDelete,
-    );
-    toolbar.append(prepare);
-
-    toolbar.append(button('Limpar seleção', 'Limpar seleção de chats', () => {
+    prefixYellow.disabled = !hasSelection;
+    const prepare = button('Abrir exclusão nativa', 'Abre somente o primeiro diálogo nativo de exclusão, sem confirmá-lo', prepareNextNativeDelete);
+    prepare.disabled = !hasSelection;
+    const clear = button('Limpar seleção', 'Limpar seleção de chats', () => {
       selectedChatIds.clear();
       deletionQueue = [];
       mountControls();
-    }));
+    });
+    clear.disabled = !hasSelection;
+    actions.append(prefixOk, prefixYellow, prepare, clear);
+    panel.append(actions);
   }
 
-  function removeToolbar() {
-    document.querySelector('[data-zapia-manager-toolbar]')?.remove();
+  function removeManagerPanel() {
+    document.querySelector('[data-zapia-manager-panel]')?.remove();
   }
 
   async function rediscoverAndApply(id, prefix) {
@@ -550,53 +504,16 @@
     await applyPrefix(row, prefix);
   }
 
-  function isRowStillInDom(chatId) {
-    const title = chatId.replace(/^text:/, '');
-    const nav = document.querySelector('flt-semantics[aria-label="Menu de navegação"]');
-    if (!nav) return false;
-    return [...nav.querySelectorAll('flt-semantics[role="button"]')].some(
-      (b) => cleanChatTitle(normalizeSpace(b.textContent || '')) === title,
-    );
-  }
-
-  function removeStaleRowControls(rows) {
-    const ids = new Set(rows.map(chatIdentity));
-    const now = Date.now();
-    for (const controls of document.querySelectorAll('[data-zapia-manager-controls]')) {
-      const cid = controls.dataset.zapiaManagerChatId;
-      if (ids.has(cid)) {
-        staleControlTimestamps.delete(cid);
-      } else if (isRowStillInDom(cid)) {
-        controls.remove();
-        staleControlTimestamps.delete(cid);
-      } else if (!staleControlTimestamps.has(cid)) {
-        staleControlTimestamps.set(cid, now);
-      } else if (now - staleControlTimestamps.get(cid) > STALE_GRACE_MS) {
-        controls.remove();
-        staleControlTimestamps.delete(cid);
-      }
-    }
-  }
-
-  function removeRowControls() {
-    document.querySelector('[data-zapia-manager-layer]')?.remove();
-    staleControlTimestamps.clear();
-  }
-
   function mountControls() {
     enableFlutterSemantics();
     const viewport = getChatViewport();
     const rows = discoverChatRows(viewport);
     if (!shouldShowChatManager(rows)) {
-      removeRowControls();
-      removeToolbar();
+      removeManagerPanel();
       return;
     }
 
-    const layer = controlLayer(viewport);
-    removeStaleRowControls(rows);
-    rows.forEach((row) => mountRowControls(row, viewport, layer));
-    renderToolbar();
+    renderManagerPanel(rows);
   }
 
   function scheduleMount() {
@@ -611,13 +528,21 @@
   function installStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      .zapia-manager-layer { position: fixed; z-index: 2147483647 !important; overflow: hidden; pointer-events: none; }
-      .zapia-manager-row-controls { position: absolute; inline-size: 18px; block-size: 18px; transform: translateY(-50%); pointer-events: auto !important; }
-      .zapia-manager-button { border: 1px solid currentColor; border-radius: 4px; background: Canvas; color: CanvasText; cursor: pointer; font: inherit; line-height: 1; min-block-size: 24px; padding: 2px 5px; pointer-events: auto !important; }
-      .zapia-manager-button:disabled { cursor: not-allowed; opacity: .55; }
-      .zapia-manager-select { box-sizing: border-box; inline-size: 18px; block-size: 18px; margin: 0; accent-color: #f5b700; cursor: pointer; }
-      .zapia-manager-toolbar { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 16px; display: flex; max-inline-size: calc(100vw - 32px); flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; border: 1px solid #a0a0a0; border-radius: 8px; background: Canvas; color: CanvasText; box-shadow: 0 3px 16px #0004; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
-      .zapia-manager-toast { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 76px; max-inline-size: min(420px, calc(100vw - 32px)); padding: 10px; border-radius: 6px; background: #222; color: #fff; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
+      .zapia-manager-panel { position: fixed; z-index: 2147483647 !important; inset: 72px 16px 16px auto; box-sizing: border-box; display: flex; inline-size: min(320px, calc(100vw - 32px)); max-block-size: calc(100vh - 88px); flex-direction: column; overflow: hidden; border: 1px solid #48515b; border-radius: 10px; background: #15191e; color: #f3f6f8; box-shadow: 0 16px 40px #0008; font: 14px/1.35 system-ui, sans-serif; pointer-events: auto !important; }
+      .zapia-manager-panel-heading { display: grid; gap: 2px; padding: 14px 14px 10px; border-bottom: 1px solid #353d46; }
+      .zapia-manager-panel-heading strong { font-size: 15px; }
+      .zapia-manager-panel-heading span { color: #aeb8c2; font-size: 12px; }
+      .zapia-manager-chat-list { display: grid; min-block-size: 0; flex: 1 1 auto; align-content: start; gap: 2px; overflow: auto; padding: 8px; }
+      .zapia-manager-chat-option { display: flex; align-items: center; gap: 9px; min-inline-size: 0; padding: 7px 6px; border-radius: 6px; cursor: pointer; }
+      .zapia-manager-chat-option:hover { background: #252c34; }
+      .zapia-manager-chat-option input { flex: 0 0 auto; inline-size: 16px; block-size: 16px; margin: 0; accent-color: #e8b64b; cursor: pointer; }
+      .zapia-manager-chat-option span { overflow: hidden; color: #e5e9ed; text-overflow: ellipsis; white-space: nowrap; }
+      .zapia-manager-panel-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px; border-top: 1px solid #353d46; }
+      .zapia-manager-button { border: 1px solid #52606d; border-radius: 6px; background: #232a32; color: #f3f6f8; cursor: pointer; font: inherit; line-height: 1.2; min-block-size: 30px; padding: 5px 7px; pointer-events: auto !important; }
+      .zapia-manager-button:hover:not(:disabled) { background: #303a45; border-color: #6d7d8e; }
+      .zapia-manager-button:focus-visible { outline: 2px solid #e8b64b; outline-offset: 2px; }
+      .zapia-manager-button:disabled { cursor: not-allowed; opacity: .45; }
+      .zapia-manager-toast { position: fixed; z-index: 2147483647 !important; right: 16px; bottom: 16px; max-inline-size: min(420px, calc(100vw - 32px)); padding: 10px; border-radius: 6px; background: #222; color: #fff; font: 14px system-ui, sans-serif; pointer-events: auto !important; }
       .zapia-manager-toast-error { background: #9f1d1d; }
       .zapia-manager-toast-warning { background: #7b5600; }
     `;

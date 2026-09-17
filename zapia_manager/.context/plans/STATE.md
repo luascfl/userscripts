@@ -50,9 +50,11 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 - `node --check zapia-manager.user.js` and `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures. `graphify update .` rebuilt 50 nodes and 93 edges.
 - The Tampermonkey BETA dashboard at `options.html#…&nav=dashboard` confirms Zapia Manager version 0.1.4 is enabled and persistent in the connected Chrome profile. The earlier `#scripts` view was the wrong dashboard route.
 
-## Scroll and hover repair, 2026-09-16
+## Separate manager panel, 2026-09-17
 
-- Version 0.21 removes the inline prefix action buttons, which formed a 97 px overlay over chat text. Each row now shows only an 18 px checkbox; after selection, the fixed toolbar exposes `✔ Prefixar`, `🟡 Prefixar`, native deletion, and clear selection.
-- The overflow-clipped layer still ends after the complete primary sidebar navigation, including `Indique e ganhe`, and before the profile footer. Row positioning remains based on each visible row’s `getBoundingClientRect()` from the animation-frame loop.
-- Tampermonkey confirms Zapia Manager 0.1.21 was saved. The browser reload entered Zapia’s loading state before the final visual smoke test could complete.
-- `node --check zapia-manager.user.js` and `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures. `graphify update .` rebuilt 57 nodes and 111 edges.
+- The user rejected every per-row overlay. Version 0.2.0 removes the clipped sidebar layer and all row controls.
+- A dedicated dark side panel now lists only visible semantic chat rows, with native checkboxes and bulk `✔ Prefixar`, `🟡 Prefixar`, guarded native deletion, and selection clearing. It is fixed at the page edge, outside the Canvas sidebar.
+- Tampermonkey’s native save control persisted Zapia Manager 0.2.0 in the connected Chrome profile.
+- Chrome DOM-fixture evidence found the three expected chat labels, no residual inline controls, a panel left edge after the sidebar’s right edge, compact row spacing, and enabled bulk actions after selecting a chat.
+- The authenticated Zapia page still stayed at its bootstrap loading screen, so the live-page visual acceptance cannot yet be observed. `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures.
+- `node --check zapia-manager.user.js` passed. `graphify update .` reported a 50-node, 98-edge, 8-community code graph and warned that its incremental graph was smaller than the existing 57-node graph, so it refused that overwrite.
