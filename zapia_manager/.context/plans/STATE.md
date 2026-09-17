@@ -118,3 +118,9 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 - User reported that `Excluir selecionados` still did nothing. Live inspection showed the selected chat’s Zapia header reuses the same `Mais ações` semantic button rather than replacing it.
 - Version 0.2.12 no longer waits for a different button instance. It selects the row, waits for two browser rendering frames so Flutter commits the selected chat, then uses the available header action. This fixes the stalled wait before the native deletion flow could begin.
 - Tampermonkey saved 0.2.12. `node --check` and all 12 Node tests passed. The final destructive confirmation was intentionally not exercised on an unrelated visible chat.
+
+## Route-aware deletion activation, 2026-09-17
+
+- User reported that deletion succeeds only when its first selected chat is already open. When it must open another selected chat first, the native menu is reached before Zapia commits that route transition.
+- Version 0.2.13 captures the route before selecting a row and opens `Mais ações` only after Zapia changes the route and renders its header action. For an already-open chat, the bounded fallback uses the available header action.
+- An isolated authenticated Zapia tab proved the relevant transition: selecting `🟡 Zotero` changed `/chat?automatedDeletionProbe=1` to `/chat?pulsusNumber=ape@210b545a-5571-41a3-a435-82b2022ff1e1` and rendered `Mais ações`. Tampermonkey saved 0.2.13; Node syntax and 12 tests passed.

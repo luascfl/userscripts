@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": true,
-      "notes": "Version 0.2.12 deletes selected chats through Zapia's own `Excluir conversa?` dialog, where it finds and confirms the exact `Excluir` action before moving to the next row. Live investigation found that Zapia reuses the current chat's header `Mais ações` semantic element, so the action opener now waits for Flutter to render the selected chat instead of waiting for a replacement element that never arrives. The installed Tampermonkey source is 0.2.12; the destructive confirmation was not exercised against an unrelated visible chat during verification."
+      "notes": "Version 0.2.13 deletes selected chats through Zapia's own `Excluir conversa?` dialog, where it finds and confirms the exact `Excluir` action before moving to the next row. It now waits for Zapia's chat route to change after selecting a non-active row, then opens that chat's rendered `Mais ações` action. An authenticated isolated-tab probe confirmed that selecting `🟡 Zotero` changed the route to its `pulsusNumber` and rendered the header action. The installed Tampermonkey source is 0.2.13; the destructive confirmation was not exercised against an unrelated visible chat during verification."
     }
   ]
 }
