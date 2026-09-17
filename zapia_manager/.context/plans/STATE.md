@@ -93,3 +93,9 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 - User reported that hovering a chat removed it from the visible panel list. Flutter replaces that row with a `Mais ações` semantic action, so version 0.2.6 holds the current panel snapshot during this transient replacement instead of re-rendering it as an incomplete list.
 - User also showed only one of two selected chats prefixing, followed by `Zapia did not render the native rename dialog to close.` The old wait re-ran global input discovery and mistook the persistent message composer for the rename dialog.
 - Version 0.2.7 waits only for the exact rename input it opened to detach or become hidden, then re-discovers the next chat. The delete control no longer displays the rename selection count. Tampermonkey saved 0.2.7; the two-chat Chrome fixture preserved a visible composer and saved `✔ Alpha`, then `✔ Bravo`, with one dialog at a time.
+
+## Scoped hover repair, 2026-09-17
+
+- User reported that the whole manager disappeared after the 0.2.7 reload. Live CDP inspection found 11 valid sidebar chat rows, but Zapia also exposes a global header `Mais ações` control.
+- The unscoped hover guard mistook that header control for Flutter’s row-replacement state and skipped every panel render. Version 0.2.8 accepts hover state only within the sidebar chat viewport.
+- Tampermonkey saved 0.2.8. A live authenticated Chrome reload rendered the side panel with three visible chats, confirmed by DOM inspection and screenshot. `node --check` and 12 Node tests passed.

@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": false,
-      "notes": "Version 0.2.7 fixes two live regressions: Flutter replaces a hovered chat row with `Mais ações`, so the panel preserves its previous rows during that transient state; and batch prefixing now waits for the exact native rename input it opened to disappear, rather than treating Zapia’s persistent message composer as a rename dialog. It restores two-chat prefixing and removes the misleading selected-count suffix from the guarded deletion button. Node contracts and a two-chat fixture with a persistent composer passed; final live acceptance requires a refreshed authenticated tab."
+      "notes": "Version 0.2.8 scopes hover detection to the Zapia chat sidebar. Version 0.2.7 treated the header’s global `Mais ações` button as a hovered sidebar chat and suppressed the entire manager panel. The panel now holds its existing list only when a `Mais ações` element appears inside the sidebar’s chat viewport. Node contracts passed, and a live authenticated Chrome reload rendered the panel with three visible chats."
     }
   ]
 }

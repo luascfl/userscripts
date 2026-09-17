@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.7
+// @version      0.2.8
 // @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -210,6 +210,15 @@
     const rowRect = row.getBoundingClientRect();
     if (rowRect.height < 20 || rowRect.height > 100) return false;
     return rowRect.top >= viewport.top && rowRect.bottom <= viewport.bottom;
+  }
+
+  function hasChatHoverAction(viewport) {
+    if (!viewport) return false;
+    return [...viewport.nav.querySelectorAll('flt-semantics[role="button"]')].some((element) => {
+      if (!isVisible(element) || !isHoverActionLabel(semanticLabel(element))) return false;
+      const rect = element.getBoundingClientRect();
+      return rect.top >= viewport.top && rect.bottom <= viewport.bottom;
+    });
   }
 
   function discoverChatRows(viewport = getChatViewport()) {
@@ -555,11 +564,12 @@
     enableFlutterSemantics();
     const viewport = getChatViewport();
     const rows = discoverChatRows(viewport);
+    const hoverActionOpen = hasChatHoverAction(viewport);
     if (!shouldShowChatManager(rows)) {
-      if (!semanticButtons().some((element) => isHoverActionLabel(semanticLabel(element)))) removeManagerPanel();
+      if (!hoverActionOpen) removeManagerPanel();
       return;
     }
-    if (semanticButtons().some((element) => isHoverActionLabel(semanticLabel(element)))) return;
+    if (hoverActionOpen) return;
 
     renderManagerPanel(rows);
   }
