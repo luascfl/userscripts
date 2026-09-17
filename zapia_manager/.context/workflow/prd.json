@@ -5,18 +5,20 @@
     {
       "id": "US-001",
       "title": "Manage Zapia chats with labels and guarded bulk deletion",
-      "description": "As a Zapia user, I can apply managed emoji prefixes and delete selected visible chats through Zapia's native confirmation flow.",
+      "description": "As a Zapia user, I can manage selected visible chats in bulk and act on the current chat through keyboard shortcuts.",
       "acceptanceCriteria": [
         "Targets https://app.zapia.com/chat only.",
         "Adds accessible ✔ and 🟡 prefix actions without stacking or duplicating managed prefixes.",
         "Provides a separate accessible side panel for selecting visible chats, without covering Canvas chat titles, and collapses it into an unobtrusive launcher.",
         "Deletion opens and confirms Zapia's native flow one selected chat at a time.",
         "Deletion confirmation is scoped to the visible native `Excluir conversa?` dialog, never a menu action.",
-        "Fixture tests cover prefix replacement, row discovery, selection, and exclusion of menu delete actions from native confirmation."
+        "`Alt+Shift+C`, `Alt+Shift+Y`, and `Alt+Shift+X` respectively prefix the current chat with ✔, prefix it with 🟡, and delete it.",
+        "Shortcuts do not intercept typing or repeated keydown events.",
+        "Tests cover prefix replacement, row discovery, selection, native-delete exclusions, and keyboard chord recognition."
       ],
       "priority": "high",
       "passes": true,
-      "notes": "Version 0.2.13 deletes selected chats through Zapia's own `Excluir conversa?` dialog, where it finds and confirms the exact `Excluir` action before moving to the next row. It now waits for Zapia's chat route to change after selecting a non-active row, then opens that chat's rendered `Mais ações` action. An authenticated isolated-tab probe confirmed that selecting `🟡 Zotero` changed the route to its `pulsusNumber` and rendered the header action. The installed Tampermonkey source is 0.2.13; the destructive confirmation was not exercised against an unrelated visible chat during verification."
+      "notes": "Version 0.2.14 adds current-chat shortcuts: `Alt+Shift+C` for ✔, `Alt+Shift+Y` for 🟡, and `Alt+Shift+X` for deletion. The handler runs in capture phase only for exact non-repeated chords, ignores editable targets, and invokes the existing native action paths. An isolated authenticated Zapia probe opened `🟡 Zotero`, dispatched `Alt+Shift+C`, observed `defaultPrevented: true` and exactly one intercepted native-action click without mutating chat data. The installed Tampermonkey source is 0.2.14; Node syntax and 13 tests passed."
     }
   ]
 }

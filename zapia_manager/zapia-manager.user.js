@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.13
-// @description  Manage visible Zapia chats from a separate panel, including one-at-a-time native deletion.
+// @version      0.2.14
+// @description  Manage visible Zapia chats from a separate panel, including one-at-a-time native deletion and current-chat shortcuts.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
 // @run-at       document-start
@@ -88,6 +88,14 @@
     return containerRole === 'menu' && DELETE_PATTERN.test(normalizeSpace(label));
   }
 
+  function currentChatShortcut(event) {
+    if (!event.altKey || !event.shiftKey || event.ctrlKey || event.metaKey || event.repeat) return null;
+    if (event.code === 'KeyC') return 'prefix-check';
+    if (event.code === 'KeyY') return 'prefix-yellow';
+    if (event.code === 'KeyX') return 'delete';
+    return null;
+  }
+
   function selectRootChatRows(candidates) {
     return candidates.filter((row) => !candidates.some((other) => other !== row && other.contains(row)));
   }
@@ -133,13 +141,14 @@
     canActivateDeleteCandidate,
     isHoverActionLabel,
     isMenuButtonLabel,
+    isNavigationActionLabel,
     selectRootChatRows,
     queueVisibleSelectedChatIds,
     isManagedNode,
     needsRemount,
     shouldShowChatManager,
     requestZapiaCacheRecovery,
-    isNavigationActionLabel,
+    currentChatShortcut,
   };
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = testApi;
@@ -398,8 +407,17 @@
     menuButton.click();
   }
 
+  async function openCurrentNativeActions() {
+    const menuButton = await waitFor(
+      semanticMenuButton,
+      'the current chat native more-actions button',
+    );
+    menuButton.click();
+  }
+
   async function applyPrefix(row, prefix) {
-    await openNativeActions(row);
+    if (row) await openNativeActions(row);
+    else await openCurrentNativeActions();
     const editAction = await waitFor(() => visibleMenuAction(EDIT_PATTERN), 'the native rename action');
     editAction.click();
 
@@ -416,7 +434,8 @@
   }
 
   async function deleteChat(row) {
-    await openNativeActions(row);
+    if (row) await openNativeActions(row);
+    else await openCurrentNativeActions();
     const deleteAction = await waitFor(
       () => visibleMenuAction(DELETE_PATTERN),
       'the native delete menu action',
@@ -448,6 +467,32 @@
       }
     });
     return element;
+  }
+
+  function isEditableTarget(target) {
+    return target instanceof Element
+      && Boolean(target.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]'));
+  }
+
+  async function runCurrentChatShortcut(action) {
+    try {
+      if (action === 'prefix-check') await applyPrefix(null, '✔ ');
+      else if (action === 'prefix-yellow') await applyPrefix(null, '🟡 ');
+      else if (action === 'delete') await deleteChat(null);
+    } catch (error) {
+      toast(error.message, 'error');
+    }
+  }
+
+  function installKeyboardShortcuts() {
+    document.addEventListener('keydown', (event) => {
+      if (event.defaultPrevented || isEditableTarget(event.target)) return;
+      const action = currentChatShortcut(event);
+      if (!action) return;
+      event.preventDefault();
+      event.stopPropagation();
+      void runCurrentChatShortcut(action);
+    }, true);
   }
 
   function queueFromSelection() {
@@ -651,6 +696,7 @@
     if (!location.pathname.startsWith('/chat')) return;
     enableFlutterSemantics();
     installStyles();
+    installKeyboardShortcuts();
     syncLoop();
   }
 
