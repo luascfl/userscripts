@@ -49,3 +49,10 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 - The live regression test found that `Limpar seleção` reset the internal set but left already mounted checkboxes checked. Version 0.1.4 synchronizes an existing row control with `selectedChatIds` on every mount. After a real reload, selecting and clearing `Compra mínima de USDT e taxa do Gemini` produced `afterSelect: true`, `afterClear: false`, and the toolbar returned to zero.
 - `node --check zapia-manager.user.js` and `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures. `graphify update .` rebuilt 50 nodes and 93 edges.
 - The Tampermonkey BETA dashboard at `options.html#…&nav=dashboard` confirms Zapia Manager version 0.1.4 is enabled and persistent in the connected Chrome profile. The earlier `#scripts` view was the wrong dashboard route.
+
+## Scroll and hover repair, 2026-09-16
+
+- Version 0.1.18 moves row controls into one fixed, overflow-clipped layer whose top is below the primary sidebar navigation and whose bottom is the profile footer. This prevents stale controls from crossing the visible chat region while Flutter recycles rows during virtual scrolling.
+- Controls remain directly positioned from each visible row’s `getBoundingClientRect()` on the animation-frame loop. Stale controls are removed immediately when their matching semantics row remains in the DOM, and retain the existing 400 ms grace period only when Flutter destroys that row for hover actions.
+- `node --check zapia-manager.user.js` and `node --test test/zapia-manager.test.mjs` passed, 10 tests and 0 failures. `graphify update .` rebuilt 56 nodes and 108 edges.
+- The persistent Chrome verification profile reached `https://app.zapia.com/auth` after reload, so logged-in browser acceptance for this revision remains blocked pending a manual Zapia login.

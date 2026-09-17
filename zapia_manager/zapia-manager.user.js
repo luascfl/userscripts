@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.1.16
+// @version      0.1.18
 // @description  Prefix Zapia chat titles and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -31,6 +31,14 @@
     'Fixados',
     'Conversas',
   ]);
+  const PRIMARY_NAVIGATION_LABELS = new Set([
+    'Novo Chat',
+    'Buscar',
+    'Agendados',
+    'Conectores',
+    'Compartilhe e ganhe',
+  ]);
+  const EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/u;
   const MENU_BUTTON_PATTERN = /(?:menu|more|options|opções|mais|ações|actions)/i;
   const EDIT_PATTERN = /(?:renomear|editar(?:\s+(?:nome|chat|conversa))?|rename|edit(?:\s+(?:name|chat|conversation))?)/i;
   const DELETE_PATTERN = /(?:excluir|apagar|deletar|delete|remove)/i;
@@ -46,8 +54,7 @@
   function isNavigationActionLabel(label) {
     const normalized = normalizeSpace(label);
     if (NAVIGATION_ACTION_LABELS.has(normalized) || /^Radar(?:\s+\d+)?$/u.test(normalized)) return true;
-    if (normalized.includes('Logo Zapia') || /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/u.test(normalized)) return true;
-    return false;
+    return normalized.includes('Logo Zapia') || EMAIL_PATTERN.test(normalized);
   }
 
   function cleanChatTitle(text) {
@@ -151,32 +158,52 @@
     return explicitId || link?.href || `text:${cleanChatTitle(rawText)}`;
   }
 
-  const HEADER_CLIP_TOP = 50;
-
-  function isFlutterChatRow(row) {
-    if (!row.matches('flt-semantics[role="button"]')) return false;
-
+  function getChatViewport() {
     const nav = document.querySelector('flt-semantics[aria-label="Menu de navegação"]');
-    if (!nav || !nav.contains(row)) return false;
+    if (!nav) return null;
+
+    const navRect = nav.getBoundingClientRect();
+    const buttons = [...nav.querySelectorAll('flt-semantics[role="button"]')];
+    const primaryBottom = buttons.reduce((bottom, button) => {
+      const label = normalizeSpace(button.textContent || button.getAttribute('aria-label') || '');
+      if (PRIMARY_NAVIGATION_LABELS.has(label) || /^Radar(?:\s+\d+)?$/u.test(label)) {
+        return Math.max(bottom, button.getBoundingClientRect().bottom);
+      }
+      return bottom;
+    }, HEADER_CLIP_TOP);
+    const profileTop = buttons.reduce((top, button) => {
+      const rect = button.getBoundingClientRect();
+      const label = normalizeSpace(button.textContent || button.getAttribute('aria-label') || '');
+      if (rect.left > navRect.left + 5 && EMAIL_PATTERN.test(label)) return Math.min(top, rect.top);
+      return top;
+    }, window.innerHeight);
+
+    return {
+      nav,
+      navRect,
+      top: Math.max(HEADER_CLIP_TOP, primaryBottom),
+      bottom: Math.min(window.innerHeight, profileTop),
+    };
+  }
+
+  function isFlutterChatRow(row, viewport) {
+    if (!viewport || !row.matches('flt-semantics[role="button"]')) return false;
+    if (!viewport.nav.contains(row)) return false;
 
     const label = normalizeSpace(row.textContent || row.getAttribute('aria-label') || '');
     if (isNavigationActionLabel(label)) return false;
 
     const rowRect = row.getBoundingClientRect();
-    const navRect = nav.getBoundingClientRect();
-
-    if (Math.abs(rowRect.left - navRect.left) > 5) return false;
+    if (Math.abs(rowRect.left - viewport.navRect.left) > 5) return false;
     if (rowRect.height < 20 || rowRect.height > 100) return false;
-    if (rowRect.top < HEADER_CLIP_TOP || rowRect.top > window.innerHeight) return false;
-
-    return true;
+    return rowRect.top >= viewport.top && rowRect.bottom <= viewport.bottom;
   }
 
-  function discoverChatRows() {
+  function discoverChatRows(viewport = getChatViewport()) {
     const candidates = [...document.querySelectorAll(CHAT_ROW_SELECTORS.join(','))]
       .filter((row) => isVisible(row) && !row.closest('[data-zapia-manager-toolbar]'))
       .filter((row) => normalizeSpace(row.textContent).length > 0)
-      .filter((row) => isFlutterChatRow(row));
+      .filter((row) => isFlutterChatRow(row, viewport));
 
     return selectRootChatRows(candidates);
   }
@@ -367,27 +394,40 @@
       .find((controls) => controls.dataset.zapiaManagerChatId === id) ?? null;
   }
 
-  function positionRowControls(controls, row) {
-    const nav = row.closest('flt-semantics[aria-label="Menu de navegação"]');
-    const navRect = nav ? nav.getBoundingClientRect() : row.getBoundingClientRect();
+  function controlLayer(viewport) {
+    let layer = document.querySelector('[data-zapia-manager-layer]');
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.className = 'zapia-manager-layer';
+      layer.dataset.zapiaManagerLayer = 'true';
+      layer.dataset.zapiaManagerControl = 'true';
+      document.body.append(layer);
+    }
+
+    layer.style.left = `${viewport.navRect.left}px`;
+    layer.style.top = `${viewport.top}px`;
+    layer.style.width = `${viewport.navRect.width}px`;
+    layer.style.height = `${Math.max(0, viewport.bottom - viewport.top)}px`;
+    return layer;
+  }
+
+  function positionRowControls(controls, row, viewport) {
     const rect = row.getBoundingClientRect();
-    
-    const targetLeft = Math.max(4, navRect.right - controls.offsetWidth - 6);
-    const targetTop = rect.top + rect.height / 2;
-    
+    const targetLeft = Math.max(4, viewport.navRect.width - controls.offsetWidth - 6);
+    const targetTop = rect.top + rect.height / 2 - viewport.top;
     const currentLeft = parseFloat(controls.style.left);
     const currentTop = parseFloat(controls.style.top);
-    
+
     if (Number.isNaN(currentLeft) || Math.abs(currentLeft - targetLeft) > 0.5) controls.style.left = `${targetLeft}px`;
     if (Number.isNaN(currentTop) || Math.abs(currentTop - targetTop) > 0.5) controls.style.top = `${targetTop}px`;
   }
 
-  function mountRowControls(row) {
+  function mountRowControls(row, viewport, layer) {
     const id = chatIdentity(row);
     let controls = rowControlsFor(id);
     if (controls) {
       controls.querySelector('.zapia-manager-select').checked = selectedChatIds.has(id);
-      positionRowControls(controls, row);
+      positionRowControls(controls, row, viewport);
       return;
     }
 
@@ -415,8 +455,8 @@
       button('✔', `Adicionar prefixo ✔ a ${describeRow(row)}`, () => rediscoverAndApply(id, '✔ ')),
       button('🟡', `Adicionar prefixo 🟡 a ${describeRow(row)}`, () => rediscoverAndApply(id, '🟡 ')),
     );
-    document.body.append(controls);
-    positionRowControls(controls, row);
+    layer.append(controls);
+    positionRowControls(controls, row, viewport);
   }
 
   function queueFromSelection() {
@@ -491,12 +531,24 @@
     await applyPrefix(row, prefix);
   }
 
+  function isRowStillInDom(chatId) {
+    const title = chatId.replace(/^text:/, '');
+    const nav = document.querySelector('flt-semantics[aria-label="Menu de navegação"]');
+    if (!nav) return false;
+    return [...nav.querySelectorAll('flt-semantics[role="button"]')].some(
+      (b) => cleanChatTitle(normalizeSpace(b.textContent || '')) === title,
+    );
+  }
+
   function removeStaleRowControls(rows) {
     const ids = new Set(rows.map(chatIdentity));
     const now = Date.now();
     for (const controls of document.querySelectorAll('[data-zapia-manager-controls]')) {
       const cid = controls.dataset.zapiaManagerChatId;
       if (ids.has(cid)) {
+        staleControlTimestamps.delete(cid);
+      } else if (isRowStillInDom(cid)) {
+        controls.remove();
         staleControlTimestamps.delete(cid);
       } else if (!staleControlTimestamps.has(cid)) {
         staleControlTimestamps.set(cid, now);
@@ -508,20 +560,23 @@
   }
 
   function removeRowControls() {
-    document.querySelectorAll('[data-zapia-manager-controls]').forEach((controls) => controls.remove());
+    document.querySelector('[data-zapia-manager-layer]')?.remove();
+    staleControlTimestamps.clear();
   }
 
   function mountControls() {
     enableFlutterSemantics();
-    const rows = discoverChatRows();
+    const viewport = getChatViewport();
+    const rows = discoverChatRows(viewport);
     if (!shouldShowChatManager(rows)) {
       removeRowControls();
       removeToolbar();
       return;
     }
 
+    const layer = controlLayer(viewport);
     removeStaleRowControls(rows);
-    rows.forEach(mountRowControls);
+    rows.forEach((row) => mountRowControls(row, viewport, layer));
     renderToolbar();
   }
 
@@ -537,7 +592,8 @@
   function installStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      .zapia-manager-row-controls { position: fixed; z-index: 2147483647 !important; display: inline-flex; align-items: center; gap: 4px; transform: translateY(-50%); padding: 2px 4px; border: 1px solid #62666d; border-radius: 6px; background: #222c; pointer-events: auto !important; }
+      .zapia-manager-layer { position: fixed; z-index: 2147483647 !important; overflow: hidden; pointer-events: none; }
+      .zapia-manager-row-controls { position: absolute; display: inline-flex; align-items: center; gap: 4px; transform: translateY(-50%); padding: 2px 4px; border: 1px solid #62666d; border-radius: 6px; background: #222c; pointer-events: auto !important; }
       .zapia-manager-button { border: 1px solid currentColor; border-radius: 4px; background: Canvas; color: CanvasText; cursor: pointer; font: inherit; line-height: 1; min-block-size: 24px; padding: 2px 5px; pointer-events: auto !important; }
       .zapia-manager-button:disabled { cursor: not-allowed; opacity: .55; }
       .zapia-manager-select { inline-size: 15px; block-size: 15px; accent-color: #f5b700; pointer-events: auto !important; cursor: pointer; }

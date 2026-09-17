@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": false,
-      "notes": "Implementation and six Node contracts passed. Browser acceptance remains pending: import in Violentmonkey and exercise the logged-in LibreWolf Zapia page."
+      "notes": "Version 0.1.18 uses an overflow-clipped control layer for Flutter virtual scrolling. Node contracts pass; browser acceptance remains blocked until the persistent Chrome profile is logged in to Zapia."
     }
   ]
 }
