@@ -1,7 +1,7 @@
 # Graph Report - zapia_manager  (2026-09-16)
 
 ## Corpus Check
-- 2 files · ~10,746 words
+- 2 files · ~10,750 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -32,10 +32,10 @@
 ## Surprising Connections (you probably didn't know these)
 - `mountControls()` --calls--> `discoverChatRows()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 2 → community 3_
-- `semanticButton()` --calls--> `semanticButtons()`  [EXTRACTED]
+- `visibleMenuAction()` --calls--> `visibleSemanticMenuAction()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 5 → community 6_
 - `applyPrefix()` --calls--> `visibleSaveAction()`  [EXTRACTED]
-  zapia-manager.user.js → zapia-manager.user.js  _Bridges community 6 → community 1_
+  zapia-manager.user.js → zapia-manager.user.js  _Bridges community 5 → community 1_
 - `rediscoverAndApply()` --calls--> `applyPrefix()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 1 → community 2_
 - `mountControls()` --calls--> `renderManagerPanel()`  [EXTRACTED]
@@ -61,14 +61,14 @@ Nodes (8): boot(), enableFlutterSemantics(), getChatViewport(), installStyles(),
 
 ### Community 5 - "Community 5"
 Cohesion: 0.5
-Nodes (4): semanticButtons(), visibleMenuAction(), visibleMenus(), visibleSemanticMenuAction()
+Nodes (4): semanticButton(), semanticButtons(), visibleSaveAction(), visibleSemanticMenuAction()
 
 ### Community 6 - "Community 6"
 Cohesion: 1.0
-Nodes (2): semanticButton(), visibleSaveAction()
+Nodes (2): visibleMenuAction(), visibleMenus()
 
 ## Knowledge Gaps
-- **Thin community `Community 6`** (2 nodes): `semanticButton()`, `visibleSaveAction()`
+- **Thin community `Community 6`** (2 nodes): `visibleMenuAction()`, `visibleMenus()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
@@ -76,7 +76,7 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `mountControls()` connect `Community 3` to `Community 0`, `Community 2`, `Community 4`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **Why does `applyPrefix()` connect `Community 1` to `Community 2`, `Community 4`, `Community 6`?**
+- **Why does `applyPrefix()` connect `Community 1` to `Community 2`, `Community 4`, `Community 5`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
 - **Why does `normalizeSpace()` connect `Community 0` to `Community 4`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._

@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": false,
-      "notes": "Version 0.2.1 removes all per-row overlay controls. A separate, collapsible side panel lists visible semantic chat rows, keeps selection and bulk prefix actions out of Zapia’s Canvas sidebar, and still opens only one native deletion dialog at a time. Node contracts and Chrome DOM fixtures passed; final live Zapia acceptance remains pending because the authenticated page stayed on its loading screen."
+      "notes": "Version 0.2.2 restores the missing deletion queue state that blocked every selected-chat action with `deletionQueue is not defined`. Prefixing now reaches Zapia’s native rename and save controls; guarded deletion opens only Zapia’s native dialog without clicking its final confirmation. Node contracts and an end-to-end Chrome DOM fixture passed; final live Zapia acceptance requires a refreshed authenticated tab."
     }
   ]
 }
