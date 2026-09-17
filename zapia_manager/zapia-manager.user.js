@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.2
+// @version      0.2.3
 // @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -269,9 +269,8 @@
   function visibleSemanticMenuAction(pattern) {
     return semanticButtons().find((element) => {
       const group = element.parentElement;
-      const isMenu = group?.getAttribute('role') === 'group'
-        && group.querySelectorAll(':scope > flt-semantics[role="button"]').length > 1;
-      return isMenu && pattern.test(semanticLabel(element));
+      return group?.getAttribute('role') === 'group'
+        && pattern.test(semanticLabel(element));
     }) ?? null;
   }
 

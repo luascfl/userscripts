@@ -1,7 +1,7 @@
-# Graph Report - zapia_manager  (2026-09-16)
+# Graph Report - zapia_manager  (2026-09-17)
 
 ## Corpus Check
-- 2 files · ~10,750 words
+- 2 files · ~10,740 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
