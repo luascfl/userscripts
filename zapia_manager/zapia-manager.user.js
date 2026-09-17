@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.0
+// @version      0.2.1
 // @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -47,6 +47,7 @@
   const selectedChatIds = new Set();
   const HEADER_CLIP_TOP = 50;
   let observerScheduled = false;
+  let panelCollapsed = false;
 
   function normalizeSpace(value) {
     return String(value ?? '').replace(/\s+/gu, ' ').trim();
@@ -425,7 +426,9 @@
   }
 
   function renderManagerPanel(rows) {
-    const state = rows.map((row) => `${chatIdentity(row)}:${selectedChatIds.has(chatIdentity(row))}`).join('\n');
+    const state = panelCollapsed
+      ? 'collapsed'
+      : rows.map((row) => `${chatIdentity(row)}:${selectedChatIds.has(chatIdentity(row))}`).join('\n');
     let panel = document.querySelector('[data-zapia-manager-panel]');
     if (panel?.dataset.zapiaManagerState === state) return;
     if (!panel) {
@@ -438,15 +441,35 @@
     }
 
     panel.dataset.zapiaManagerState = state;
+    panel.classList.toggle('is-collapsed', panelCollapsed);
     panel.replaceChildren();
+    if (panelCollapsed) {
+      const expand = button('Gerenciar chats', 'Abrir Zapia Manager', () => {
+        panelCollapsed = false;
+        renderManagerPanel(rows);
+      });
+      expand.classList.add('zapia-manager-launcher');
+      expand.setAttribute('aria-expanded', 'false');
+      panel.append(expand);
+      return;
+    }
 
     const heading = document.createElement('div');
     heading.className = 'zapia-manager-panel-heading';
+    const headingCopy = document.createElement('div');
+    headingCopy.className = 'zapia-manager-panel-heading-copy';
     const title = document.createElement('strong');
     title.textContent = 'Zapia Manager';
     const summary = document.createElement('span');
     summary.textContent = `${rows.length} visíveis · ${selectedChatIds.size} selecionado${selectedChatIds.size === 1 ? '' : 's'}`;
-    heading.append(title, summary);
+    headingCopy.append(title, summary);
+    const minimize = button('Minimizar', 'Minimizar Zapia Manager', () => {
+      panelCollapsed = true;
+      renderManagerPanel(rows);
+    });
+    minimize.classList.add('zapia-manager-minimize');
+    minimize.setAttribute('aria-expanded', 'true');
+    heading.append(headingCopy, minimize);
     panel.append(heading);
 
     const list = document.createElement('div');
@@ -529,9 +552,13 @@
     const style = document.createElement('style');
     style.textContent = `
       .zapia-manager-panel { position: fixed; z-index: 2147483647 !important; inset: 72px 16px 16px auto; box-sizing: border-box; display: flex; inline-size: min(320px, calc(100vw - 32px)); max-block-size: calc(100vh - 88px); flex-direction: column; overflow: hidden; border: 1px solid #48515b; border-radius: 10px; background: #15191e; color: #f3f6f8; box-shadow: 0 16px 40px #0008; font: 14px/1.35 system-ui, sans-serif; pointer-events: auto !important; }
-      .zapia-manager-panel-heading { display: grid; gap: 2px; padding: 14px 14px 10px; border-bottom: 1px solid #353d46; }
+      .zapia-manager-panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 14px 14px 10px; border-bottom: 1px solid #353d46; }
+      .zapia-manager-panel-heading-copy { display: grid; min-inline-size: 0; gap: 2px; }
       .zapia-manager-panel-heading strong { font-size: 15px; }
       .zapia-manager-panel-heading span { color: #aeb8c2; font-size: 12px; }
+      .zapia-manager-minimize { flex: 0 0 auto; min-block-size: 24px; padding: 2px 6px; }
+      .zapia-manager-panel.is-collapsed { inset: auto 16px 16px auto; display: block; inline-size: max-content; min-inline-size: 0; max-inline-size: calc(100vw - 32px); max-block-size: none; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+      .zapia-manager-launcher { min-block-size: 34px; padding-inline: 10px; box-shadow: 0 8px 24px #0008; }
       .zapia-manager-chat-list { display: grid; min-block-size: 0; flex: 1 1 auto; align-content: start; gap: 2px; overflow: auto; padding: 8px; }
       .zapia-manager-chat-option { display: flex; align-items: center; gap: 9px; min-inline-size: 0; padding: 7px 6px; border-radius: 6px; cursor: pointer; }
       .zapia-manager-chat-option:hover { background: #252c34; }

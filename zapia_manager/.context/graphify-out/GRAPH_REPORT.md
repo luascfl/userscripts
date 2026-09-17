@@ -1,7 +1,7 @@
 # Graph Report - zapia_manager  (2026-09-16)
 
 ## Corpus Check
-- 2 files · ~10,617 words
+- 2 files · ~10,746 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -32,8 +32,8 @@
 ## Surprising Connections (you probably didn't know these)
 - `mountControls()` --calls--> `discoverChatRows()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 2 → community 3_
-- `visibleSemanticMenuAction()` --calls--> `semanticButtons()`  [EXTRACTED]
-  zapia-manager.user.js → zapia-manager.user.js  _Bridges community 6 → community 5_
+- `semanticButton()` --calls--> `semanticButtons()`  [EXTRACTED]
+  zapia-manager.user.js → zapia-manager.user.js  _Bridges community 5 → community 6_
 - `applyPrefix()` --calls--> `visibleSaveAction()`  [EXTRACTED]
   zapia-manager.user.js → zapia-manager.user.js  _Bridges community 6 → community 1_
 - `rediscoverAndApply()` --calls--> `applyPrefix()`  [EXTRACTED]
@@ -60,12 +60,16 @@ Cohesion: 0.29
 Nodes (8): boot(), enableFlutterSemantics(), getChatViewport(), installStyles(), mountControls(), removeManagerPanel(), shouldShowChatManager(), syncLoop()
 
 ### Community 5 - "Community 5"
-Cohesion: 0.67
-Nodes (3): visibleMenuAction(), visibleMenus(), visibleSemanticMenuAction()
+Cohesion: 0.5
+Nodes (4): semanticButtons(), visibleMenuAction(), visibleMenus(), visibleSemanticMenuAction()
 
 ### Community 6 - "Community 6"
-Cohesion: 0.67
-Nodes (3): semanticButton(), semanticButtons(), visibleSaveAction()
+Cohesion: 1.0
+Nodes (2): semanticButton(), visibleSaveAction()
+
+## Knowledge Gaps
+- **Thin community `Community 6`** (2 nodes): `semanticButton()`, `visibleSaveAction()`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
