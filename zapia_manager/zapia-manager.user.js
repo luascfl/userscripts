@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.9
-// @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
+// @version      0.2.11
+// @description  Manage visible Zapia chats from a separate panel, including one-at-a-time native deletion.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
 // @run-at       document-start
@@ -321,20 +321,31 @@
     return null;
   }
 
-  function nativeDeleteDialogOpen() {
-    const htmlDialogOpen = [...document.querySelectorAll('dialog, [role="dialog"], [data-radix-alert-dialog-content]')]
+  function nativeDeleteDialog() {
+    const htmlDialog = [...document.querySelectorAll('dialog, [role="dialog"], [data-radix-alert-dialog-content]')]
       .filter(isVisible)
-      .some((dialog) => DELETE_PATTERN.test(normalizeSpace(dialog.textContent)));
-    if (htmlDialogOpen) return true;
+      .find((dialog) => DELETE_PATTERN.test(normalizeSpace(dialog.textContent)));
+    if (htmlDialog) return htmlDialog;
 
-    return [...document.querySelectorAll('flt-semantics[role="group"]')]
+    return [...document.querySelectorAll('flt-semantics')]
       .filter(isVisible)
-      .some((group) => {
+      .find((group) => {
         const labels = [...group.querySelectorAll(':scope flt-semantics[role="button"]')].map(semanticLabel);
-        return DELETE_PATTERN.test(normalizeSpace(group.textContent))
-          && labels.some((label) => DELETE_PATTERN.test(label))
+        return /excluir conversa\?|delete conversation\?/i.test(normalizeSpace(group.textContent))
+          && labels.some((label) => /^(?:excluir|delete)$/i.test(label))
           && labels.some((label) => /^(?:cancelar|cancel)$/i.test(label));
-      });
+      }) ?? null;
+  }
+
+  function nativeDeleteDialogOpen() {
+    return nativeDeleteDialog() !== null;
+  }
+
+  function nativeDeleteConfirmAction() {
+    const dialog = nativeDeleteDialog();
+    if (!dialog) return null;
+    return [...dialog.querySelectorAll('button, [role="button"], flt-semantics[role="button"]')]
+      .find((button) => /^(?:excluir|delete)$/i.test(semanticLabel(button))) ?? null;
   }
 
   function setInputValue(input, value) {
@@ -397,14 +408,19 @@
     );
   }
 
-  async function openNativeDelete(row) {
+  async function deleteChat(row) {
     await openNativeActions(row);
     const deleteAction = await waitFor(
       () => visibleMenuAction(DELETE_PATTERN),
       'the native delete menu action',
     );
     deleteAction.click();
-    toast('A confirmação final é do Zapia. Confirme ou cancele no diálogo nativo.', 'warning');
+    const confirmAction = await waitFor(nativeDeleteConfirmAction, 'the native delete confirmation');
+    confirmAction.click();
+    await waitFor(
+      () => !nativeDeleteDialogOpen(),
+      'the native delete confirmation to close',
+    );
   }
 
   function button(label, title, handler) {
@@ -445,18 +461,19 @@
     mountControls();
   }
 
-  async function prepareNextNativeDelete() {
+  async function deleteSelectedChats() {
     if (nativeDeleteDialogOpen()) {
-      throw new Error('Conclua ou cancele o diálogo nativo do Zapia antes de preparar o próximo chat.');
+      throw new Error('Conclua ou cancele o diálogo nativo do Zapia antes de excluir outro chat.');
     }
 
-    const rowsById = queueFromSelection();
-    const nextId = deletionQueue[0];
-    if (!nextId) throw new Error('Selecione pelo menos um chat visível.');
-    const row = rowsById.get(nextId);
-    await openNativeDelete(row);
-    selectedChatIds.delete(nextId);
-    deletionQueue.shift();
+    queueFromSelection();
+    if (!deletionQueue.length) throw new Error('Selecione pelo menos um chat visível.');
+
+    for (const id of [...deletionQueue]) {
+      await rediscoverAndDelete(id);
+      selectedChatIds.delete(id);
+    }
+    deletionQueue = [];
     mountControls();
   }
 
@@ -537,9 +554,9 @@
     const prefixYellow = button('🟡 Prefixar', 'Aplica o prefixo 🟡 aos chats visíveis selecionados', () => applyPrefixToSelectedChats('🟡 '));
     prefixYellow.disabled = !hasSelection;
     const prepare = button(
-      'Abrir exclusão nativa',
-      'Abre somente um diálogo nativo por vez, sem confirmá-lo',
-      prepareNextNativeDelete,
+      'Excluir selecionados',
+      'Exclui cada chat selecionado, um por vez, pela confirmação nativa do Zapia',
+      deleteSelectedChats,
     );
     prepare.disabled = !hasSelection;
     const clear = button('Limpar seleção', 'Limpar seleção de chats', () => {
@@ -562,6 +579,14 @@
       `chat ${id}`,
     );
     await applyPrefix(row, prefix);
+  }
+
+  async function rediscoverAndDelete(id) {
+    const row = await waitFor(
+      () => discoverChatRows().find((candidate) => chatIdentity(candidate) === id) ?? null,
+      `chat ${id}`,
+    );
+    await deleteChat(row);
   }
 
   function mountControls() {

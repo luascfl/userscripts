@@ -5,18 +5,18 @@
     {
       "id": "US-001",
       "title": "Manage Zapia chats with labels and guarded bulk deletion",
-      "description": "As a Zapia user, I can apply managed emoji prefixes, select multiple chats, and start each native deletion flow without allowing the script to confirm destructive dialogs.",
+      "description": "As a Zapia user, I can apply managed emoji prefixes and delete selected visible chats through Zapia's native confirmation flow.",
       "acceptanceCriteria": [
         "Targets https://app.zapia.com/chat only.",
         "Adds accessible ✔ and 🟡 prefix actions without stacking or duplicating managed prefixes.",
         "Provides a separate accessible side panel for selecting visible chats, without covering Canvas chat titles, and collapses it into an unobtrusive launcher.",
-        "Deletion initiation uses Zapia's visible native controls one chat at a time.",
-        "The script never clicks any final deletion confirmation.",
-        "Fixture tests cover prefix replacement, row discovery, selection, and exclusion of final confirmation buttons."
+        "Deletion opens and confirms Zapia's native flow one selected chat at a time.",
+        "Deletion confirmation is scoped to the visible native `Excluir conversa?` dialog, never a menu action.",
+        "Fixture tests cover prefix replacement, row discovery, selection, and exclusion of menu delete actions from native confirmation."
       ],
       "priority": "high",
       "passes": true,
-      "notes": "Version 0.2.9 fixes batch prefixing when Zapia keeps a header-level `Mais ações` button after switching chats. The action flow snapshots that button before selecting a queued row and waits for Zapia to replace it, so it never opens the previous chat’s menu for the next selected chat. Live authenticated Chrome verification selected `🟡 Zotero` and `🟡 Ifood`, applied `✔` to both, cleared selection to zero, produced no error toast, and left no native dialog open. Guarded deletion remains one native dialog at a time without final confirmation."
+      "notes": "Version 0.2.11 changes the requested action from preparing a dialog to deleting selected chats. Each queued row opens Zapia's own `Excluir conversa?` dialog, finds its exact `Excluir` confirmation within that dialog, confirms it, waits for the dialog to close, then continues to the next row. Live authenticated Chrome verification confirms the installed panel label and its one-at-a-time native deletion contract. The actual final confirmation was not exercised against a live chat during verification to avoid deleting user data."
     }
   ]
 }

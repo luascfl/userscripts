@@ -106,3 +106,9 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 - Version 0.2.9 records the current header action before selecting each queued row and waits for Zapia to replace it. The resulting menu action is therefore tied to the selected row, not the prior chat.
 - Tampermonkey saved 0.2.9. A two-chat Chrome fixture with a persistent header-level action saved `✔ Alpha` and `✔ Bravo` in order.
 - Live authenticated Chrome verification after the workstation restart selected `🟡 Zotero` and `🟡 Ifood` simultaneously. One `✔ Prefixar` action changed both visible titles to `✔ Zotero` and `✔ Ifood`, cleared the panel selection to zero, produced no error toast, and left no native dialog open.
+
+## Confirmed native deletion, 2026-09-17
+
+- User required the panel action to delete selected chats rather than merely expose Zapia's confirmation dialog.
+- Version 0.2.11 labels the action `Excluir selecionados`. It opens Zapia's own `Excluir conversa?` dialog, finds `Excluir` only inside that dialog beside `Cancelar`, confirms it, waits for its closure, then moves to the next selected chat.
+- The native dialog structure was inspected in the authenticated application. The installed panel now exposes the updated label and one-at-a-time deletion contract. No user chat was actually deleted during automated verification.
