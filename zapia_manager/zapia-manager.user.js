@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.14
+// @version      0.2.15
 // @description  Manage visible Zapia chats from a separate panel, including one-at-a-time native deletion and current-chat shortcuts.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -566,7 +566,10 @@
     title.textContent = 'Zapia Manager';
     const summary = document.createElement('span');
     summary.textContent = `${rows.length} visíveis · ${selectedChatIds.size} selecionado${selectedChatIds.size === 1 ? '' : 's'}`;
-    headingCopy.append(title, summary);
+    const shortcuts = document.createElement('span');
+    shortcuts.className = 'zapia-manager-shortcuts';
+    shortcuts.textContent = 'Atual: ✔ (Alt+Shift+C) · 🟡 (Alt+Shift+Y) · excluir (Alt+Shift+X)';
+    headingCopy.append(title, summary, shortcuts);
     const minimize = button('Minimizar', 'Minimizar Zapia Manager', () => {
       panelCollapsed = true;
       renderManagerPanel(rows);
@@ -673,6 +676,7 @@
       .zapia-manager-panel-heading strong { font-size: 15px; }
       .zapia-manager-panel-heading span { color: #aeb8c2; font-size: 12px; }
       .zapia-manager-minimize { flex: 0 0 auto; min-block-size: 24px; padding: 2px 6px; }
+      .zapia-manager-shortcuts { color: #7f8d9c !important; font-size: 11px !important; line-height: 1.25; }
       .zapia-manager-panel.is-collapsed { inset: auto 16px 16px auto; display: block; inline-size: max-content; min-inline-size: 0; max-inline-size: calc(100vw - 32px); max-block-size: none; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
       .zapia-manager-launcher { min-block-size: 34px; padding-inline: 10px; box-shadow: 0 8px 24px #0008; }
       .zapia-manager-chat-list { display: grid; min-block-size: 0; flex: 1 1 auto; align-content: start; gap: 2px; overflow: auto; padding: 8px; }

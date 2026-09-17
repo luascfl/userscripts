@@ -130,3 +130,8 @@ Local commit `b3472de` contains this story. `git push` on 2026-09-06 was rejecte
 - Version 0.2.14 adds `Alt+Shift+C` to prefix the current chat with `✔`, `Alt+Shift+Y` to prefix it with `🟡`, and `Alt+Shift+X` to delete it through the existing native confirmation path.
 - The capture-phase handler accepts only those exact chords, suppresses browser/page handling only after matching, and ignores editable fields plus held-key repeats.
 - Tampermonkey saved 0.2.14. Node syntax and 13 tests passed, including the accepted and rejected keyboard chords. An isolated authenticated Zapia tab opened `🟡 Zotero`; synthetic `Alt+Shift+C` was prevented and reached exactly one native-action click, intercepted before it could change data.
+
+## Visible current-chat shortcut hint, 2026-09-17
+
+- Version 0.2.15 adds the compact header hint `Atual: ✔ (Alt+Shift+C) · 🟡 (Alt+Shift+Y) · excluir (Alt+Shift+X)`.
+- Tampermonkey saved 0.2.15. An authenticated Zapia panel screenshot confirms the hint is visible above the selectable-chat list; Node syntax and 13 tests passed.
