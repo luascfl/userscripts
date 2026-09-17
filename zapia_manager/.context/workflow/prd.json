@@ -16,7 +16,7 @@
       ],
       "priority": "high",
       "passes": false,
-      "notes": "Version 0.2.3 accepts Zapia’s actual Flutter menu structure: each visible action is a semantic button directly inside a role=group, without requiring multiple direct sibling buttons. It restores native Renomear and Excluir discovery after the user reported the rename-action timeout. Prefixing reaches native rename and save; guarded deletion opens only Zapia’s dialog without its final confirmation. Node contracts and an end-to-end semantic-menu fixture passed; final live acceptance requires a refreshed authenticated tab."
+      "notes": "Version 0.2.4 fixes an overly broad menu-button matcher that treated the native `Informações do chat` button as `Mais ações` because it contained the word `ações`. The matcher now accepts only exact native menu labels, so prefixing opens the actual more-actions menu before selecting Renomear. Node contracts and an end-to-end fixture with both buttons passed; final live acceptance requires a refreshed authenticated tab."
     }
   ]
 }

@@ -1,11 +1,11 @@
 # Graph Report - zapia_manager  (2026-09-17)
 
 ## Corpus Check
-- 2 files · ~10,740 words
+- 2 files · ~10,773 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 50 nodes · 98 edges · 6 communities detected
+- 51 nodes · 100 edges · 6 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -19,7 +19,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `mountControls()` - 10 edges
-2. `normalizeSpace()` - 7 edges
+2. `normalizeSpace()` - 8 edges
 3. `applyPrefix()` - 7 edges
 4. `discoverChatRows()` - 5 edges
 5. `openNativeActions()` - 5 edges
@@ -44,8 +44,8 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.27
-Nodes (10): button(), canActivateDeleteCandidate(), chatIdentity(), cleanChatTitle(), describeRow(), isFlutterChatRow(), isNavigationActionLabel(), normalizeSpace() (+2 more)
+Cohesion: 0.24
+Nodes (11): button(), canActivateDeleteCandidate(), chatIdentity(), cleanChatTitle(), describeRow(), isFlutterChatRow(), isMenuButtonLabel(), isNavigationActionLabel() (+3 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.28
@@ -75,8 +75,8 @@ Nodes (2): visibleMenuAction(), visibleMenus()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `mountControls()` connect `Community 3` to `Community 0`, `Community 2`, `Community 4`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **Why does `applyPrefix()` connect `Community 1` to `Community 2`, `Community 4`, `Community 5`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `normalizeSpace()` connect `Community 0` to `Community 4`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **Why does `applyPrefix()` connect `Community 1` to `Community 2`, `Community 4`, `Community 5`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._

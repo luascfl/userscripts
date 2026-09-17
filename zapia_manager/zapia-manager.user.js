@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.3
+// @version      0.2.4
 // @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -41,7 +41,7 @@
     'Indique e ganhe',
   ]);
   const EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/u;
-  const MENU_BUTTON_PATTERN = /(?:menu|more|options|opções|mais|ações|actions)/i;
+  const MENU_BUTTON_PATTERN = /^(?:menu|more|options|opções|mais ações|actions)$/i;
   const EDIT_PATTERN = /(?:renomear|editar(?:\s+(?:nome|chat|conversa))?|rename|edit(?:\s+(?:name|chat|conversation))?)/i;
   const DELETE_PATTERN = /(?:excluir|apagar|deletar|delete|remove)/i;
   const selectedChatIds = new Set();
@@ -52,6 +52,10 @@
 
   function normalizeSpace(value) {
     return String(value ?? '').replace(/\s+/gu, ' ').trim();
+  }
+
+  function isMenuButtonLabel(label) {
+    return MENU_BUTTON_PATTERN.test(normalizeSpace(label));
   }
 
   function isNavigationActionLabel(label) {
@@ -122,6 +126,7 @@
     stripManagedPrefix,
     withPrefix,
     canActivateDeleteCandidate,
+    isMenuButtonLabel,
     selectRootChatRows,
     queueVisibleSelectedChatIds,
     isManagedNode,
@@ -235,7 +240,7 @@
     const candidates = [...row.querySelectorAll('button:not([data-zapia-manager-control])')];
     return candidates.find((button) => {
       const label = [button.getAttribute('aria-label'), button.title, button.textContent].filter(Boolean).join(' ');
-      return MENU_BUTTON_PATTERN.test(label) || normalizeSpace(button.textContent) === '...';
+      return isMenuButtonLabel(label) || normalizeSpace(button.textContent) === '...';
     }) ?? null;
   }
 

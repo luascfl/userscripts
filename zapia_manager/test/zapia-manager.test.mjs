@@ -28,6 +28,12 @@ test('normalization supports text from browser controls', () => {
   assert.equal(manager.normalizeSpace('  Excluir\n chat  '), 'Excluir chat');
 });
 
+test('only exact native more-actions labels can open a chat menu', () => {
+  assert.equal(manager.isMenuButtonLabel('Mais ações'), true);
+  assert.equal(manager.isMenuButtonLabel('  options  '), true);
+  assert.equal(manager.isMenuButtonLabel('Informações do chat'), false);
+});
+
 test('known Flutter navigation labels are not treated as chat titles', () => {
   assert.equal(manager.isNavigationActionLabel('Novo Chat'), true);
   assert.equal(manager.isNavigationActionLabel('Radar 6'), true);
