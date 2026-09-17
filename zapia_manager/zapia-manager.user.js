@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.4
+// @version      0.2.5
 // @description  Manage visible Zapia chats from a separate panel and safely prepare native deletion dialogs.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -232,6 +232,10 @@
       .filter((element) => isVisible(element) && !element.closest('[data-zapia-manager-control]'));
   }
 
+  function semanticMenuButton() {
+    return semanticButtons().find((element) => isMenuButtonLabel(semanticLabel(element))) ?? null;
+  }
+
   function semanticButton(pattern) {
     return semanticButtons().find((element) => pattern.test(semanticLabel(element))) ?? null;
   }
@@ -349,7 +353,7 @@
     }
 
     row.click();
-    const menuButton = await waitFor(() => semanticButton(MENU_BUTTON_PATTERN), 'the native options button');
+    const menuButton = await waitFor(semanticMenuButton, 'the native more-actions button');
     menuButton.click();
   }
 
@@ -364,6 +368,7 @@
 
     setInputValue(input, withPrefix(input.value, prefix));
     saveAction.click();
+    await waitFor(() => !nativeRenameInput(), 'the native rename dialog to close');
   }
 
   async function openNativeDelete(row) {
@@ -406,8 +411,7 @@
     const rowsById = queueFromSelection();
     if (!deletionQueue.length) throw new Error('Selecione pelo menos um chat visível.');
 
-    for (const id of deletionQueue) {
-      if (!rowsById.has(id)) continue;
+    for (const id of [...deletionQueue]) {
       await rediscoverAndApply(id, prefix);
       selectedChatIds.delete(id);
     }
@@ -506,7 +510,11 @@
     prefixOk.disabled = !hasSelection;
     const prefixYellow = button('🟡 Prefixar', 'Aplica o prefixo 🟡 aos chats visíveis selecionados', () => applyPrefixToSelectedChats('🟡 '));
     prefixYellow.disabled = !hasSelection;
-    const prepare = button('Abrir exclusão nativa', 'Abre somente o primeiro diálogo nativo de exclusão, sem confirmá-lo', prepareNextNativeDelete);
+    const prepare = button(
+      hasSelection ? `Abrir próxima exclusão (${selectedChatIds.size})` : 'Abrir exclusão nativa',
+      'Abre somente um diálogo nativo por vez, sem confirmá-lo',
+      prepareNextNativeDelete,
+    );
     prepare.disabled = !hasSelection;
     const clear = button('Limpar seleção', 'Limpar seleção de chats', () => {
       selectedChatIds.clear();
@@ -523,12 +531,10 @@
   }
 
   async function rediscoverAndApply(id, prefix) {
-    let row = discoverChatRows().find((r) => chatIdentity(r) === id);
-    if (!row) {
-      await new Promise((r) => setTimeout(r, 300));
-      row = discoverChatRows().find((r) => chatIdentity(r) === id);
-    }
-    if (!row) throw new Error('Chat não encontrado. Tente novamente.');
+    const row = await waitFor(
+      () => discoverChatRows().find((candidate) => chatIdentity(candidate) === id) ?? null,
+      `chat ${id}`,
+    );
     await applyPrefix(row, prefix);
   }
 
