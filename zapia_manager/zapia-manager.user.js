@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Zapia Manager
 // @namespace    https://github.com/luascfl/userscripts
-// @version      0.2.16
+// @version      0.2.18
 // @description  Manage visible Zapia chats from a separate panel, including one-at-a-time native deletion and current-chat shortcuts.
 // @match        https://app.zapia.com/chat*
 // @match        https://app.zapia.com/chat/*
@@ -200,6 +200,25 @@
     return isShortcut(shortcut) ? shortcut : null;
   }
 
+  function shortcutFromEvent(event) {
+    return {
+      ctrlKey: event.ctrlKey,
+      altKey: event.altKey,
+      shiftKey: event.shiftKey,
+      metaKey: event.metaKey,
+      code: event.code,
+    };
+  }
+
+  function shortcutValidationError(shortcut) {
+    if (!isShortcut(shortcut)) return 'Use uma tecla de letra, número ou F1–F12 junto de Ctrl, Alt, Shift ou Meta.';
+    const label = shortcutLabel(shortcut);
+    if (['Alt+F4', 'Ctrl+W', 'Ctrl+T', 'Ctrl+N', 'Ctrl+R', 'Ctrl+L', 'Ctrl+Shift+W'].includes(label)) {
+      return `${label} é reservado pelo navegador ou sistema.`;
+    }
+    return null;
+  }
+
   const testApi = {
     normalizeSpace,
     stripManagedPrefix,
@@ -217,6 +236,8 @@
     currentChatShortcut,
     parseShortcut,
     shortcutLabel,
+    shortcutFromEvent,
+    shortcutValidationError,
     loadPreferences,
   };
   if (typeof module !== 'undefined' && module.exports) {
@@ -555,19 +576,66 @@
   }
 
   function configurePreferences() {
-    const prefixes = preferences.prefixes.map((emoji, index) => prompt(`Emoji do prefixo ${index + 1}:`, emoji));
-    if (prefixes.some((emoji) => emoji === null)) return;
+    const dialog = document.createElement('dialog');
+    dialog.className = 'zapia-manager-settings';
+    dialog.dataset.zapiaManagerControl = 'true';
+    const title = document.createElement('h2');
+    title.textContent = 'Configurar emojis e atalhos';
+    const fields = document.createElement('div');
+    fields.className = 'zapia-manager-settings-fields';
+    const feedback = document.createElement('output');
+    feedback.className = 'zapia-manager-settings-feedback';
+    const field = (label, value, readonly = false) => {
+      const wrapper = document.createElement('label');
+      wrapper.textContent = label;
+      const input = document.createElement('input');
+      input.value = value;
+      input.readOnly = readonly;
+      wrapper.append(input);
+      fields.append(wrapper);
+      return input;
+    };
+    const emojiOne = field('Emoji do primeiro prefixo', preferences.prefixes[0]);
+    const emojiTwo = field('Emoji do segundo prefixo', preferences.prefixes[1]);
     const shortcuts = {};
     for (const action of ['prefix-check', 'prefix-yellow', 'delete']) {
-      const value = prompt(`Atalho para ${action === 'prefix-check' ? 'prefixar 1' : action === 'prefix-yellow' ? 'prefixar 2' : 'excluir'}:`, shortcutLabel(preferences.shortcuts[action]));
-      if (value === null) return;
-      shortcuts[action] = parseShortcut(value);
+      const input = field(`Atalho: ${action === 'delete' ? 'excluir' : action === 'prefix-check' ? 'primeiro prefixo' : 'segundo prefixo'}`, shortcutLabel(preferences.shortcuts[action]), true);
+      shortcuts[action] = preferences.shortcuts[action];
+      input.addEventListener('keydown', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const shortcut = shortcutFromEvent(event);
+        const error = shortcutValidationError(shortcut);
+        if (error) {
+          feedback.textContent = error;
+          return;
+        }
+        shortcuts[action] = shortcut;
+        input.value = shortcutLabel(shortcut);
+        feedback.textContent = '';
+      });
     }
-    if (prefixes.some((emoji) => !String(emoji).trim() || String(emoji).trim().length > 16) || new Set(prefixes.map((emoji) => String(emoji).trim())).size !== 2 || Object.values(shortcuts).some((shortcut) => !shortcut)) {
-      throw new Error('Use dois emojis diferentes e atalhos como Alt+Shift+C.');
-    }
-    savePreferences({ prefixes: prefixes.map((emoji) => String(emoji).trim()), shortcuts }, window.localStorage);
-    mountControls();
+    const actions = document.createElement('div');
+    actions.className = 'zapia-manager-settings-actions';
+    const cancel = button('Cancelar', 'Fechar sem salvar', () => dialog.close());
+    const save = button('Salvar', 'Salvar emojis e atalhos', () => {
+      const prefixes = [emojiOne.value.trim(), emojiTwo.value.trim()];
+      const labels = Object.values(shortcuts).map(shortcutLabel);
+      if (prefixes.some((emoji) => !emoji || emoji.length > 16) || new Set(prefixes).size !== 2) {
+        throw new Error('Use dois emojis diferentes.');
+      }
+      if (Object.values(shortcuts).some(shortcutValidationError) || new Set(labels).size !== labels.length) {
+        throw new Error('Use atalhos possíveis e diferentes entre si.');
+      }
+      savePreferences({ prefixes, shortcuts }, window.localStorage);
+      dialog.close();
+      mountControls();
+    });
+    actions.append(cancel, save);
+    dialog.append(title, fields, feedback, actions);
+    dialog.addEventListener('close', () => dialog.remove(), { once: true });
+    document.body.append(dialog);
+    dialog.showModal();
   }
 
   function installKeyboardShortcuts() {
@@ -753,6 +821,7 @@
       .zapia-manager-panel-heading strong { font-size: 15px; }
       .zapia-manager-panel-heading span { color: #aeb8c2; font-size: 12px; }
       .zapia-manager-minimize { flex: 0 0 auto; min-block-size: 24px; padding: 2px 6px; }
+      .zapia-manager-settings-feedback { display: block; min-block-size: 18px; margin-top: 8px; color: #f0b65a; font-size: 12px; }
       .zapia-manager-shortcuts { color: #7f8d9c !important; font-size: 11px !important; line-height: 1.25; }
       .zapia-manager-panel.is-collapsed { inset: auto 16px 16px auto; display: block; inline-size: max-content; min-inline-size: 0; max-inline-size: calc(100vw - 32px); max-block-size: none; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
       .zapia-manager-launcher { min-block-size: 34px; padding-inline: 10px; box-shadow: 0 8px 24px #0008; }
@@ -762,6 +831,13 @@
       .zapia-manager-chat-option:hover { background: #252c34; }
       .zapia-manager-chat-option input { flex: 0 0 auto; inline-size: 16px; block-size: 16px; margin: 0; accent-color: #e8b64b; cursor: pointer; }
       .zapia-manager-chat-option span { overflow: hidden; color: #e5e9ed; text-overflow: ellipsis; white-space: nowrap; }
+      .zapia-manager-settings { z-index: 2147483647; inline-size: min(360px, calc(100vw - 32px)); border: 1px solid #52606d; border-radius: 10px; background: #15191e; color: #f3f6f8; box-shadow: 0 16px 40px #0008; font: 14px/1.35 system-ui, sans-serif; }
+      .zapia-manager-settings::backdrop { background: #0009; }
+      .zapia-manager-settings h2 { margin: 0 0 12px; font-size: 16px; }
+      .zapia-manager-settings-fields { display: grid; gap: 10px; }
+      .zapia-manager-settings label { display: grid; gap: 4px; color: #cbd4dc; font-size: 12px; }
+      .zapia-manager-settings input { box-sizing: border-box; inline-size: 100%; border: 1px solid #52606d; border-radius: 5px; background: #232a32; color: #f3f6f8; font: inherit; padding: 7px; }
+      .zapia-manager-settings-actions { display: flex; justify-content: flex-end; gap: 7px; margin-top: 14px; }
       .zapia-manager-panel-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px; border-top: 1px solid #353d46; }
       .zapia-manager-button { border: 1px solid #52606d; border-radius: 6px; background: #232a32; color: #f3f6f8; cursor: pointer; font: inherit; line-height: 1.2; min-block-size: 30px; padding: 5px 7px; pointer-events: auto !important; }
       .zapia-manager-button:hover:not(:disabled) { background: #303a45; border-color: #6d7d8e; }

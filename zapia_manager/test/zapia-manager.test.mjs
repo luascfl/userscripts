@@ -38,6 +38,12 @@ test('shortcut configuration parses only modified supported keys', () => {
   assert.equal(manager.parseShortcut('Alt+Shift+Escape'), null);
 });
 
+test('shortcut validation rejects unavailable browser shortcuts', () => {
+  assert.equal(manager.shortcutValidationError(manager.parseShortcut('Alt+F4')), 'Alt+F4 é reservado pelo navegador ou sistema.');
+  assert.equal(manager.shortcutValidationError(manager.parseShortcut('Ctrl+W')), 'Ctrl+W é reservado pelo navegador ou sistema.');
+  assert.equal(manager.shortcutValidationError(manager.parseShortcut('Alt+Shift+C')), null);
+});
+
 test('normalization supports text from browser controls', () => {
   assert.equal(manager.normalizeSpace('  Excluir\n chat  '), 'Excluir chat');
 });
