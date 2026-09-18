@@ -1,18 +1,24 @@
 [submodule "filtrar-vagas-espro"]
 	path = filtrar-vagas-espro
-	url = https://github.com/luascfl/filtrar-vagas-espro
+	url = https://github.com/luascfl/filtrar-vagas-espro.git
 [submodule "gsheets-diff-alerts-mods"]
 	path = gsheets-diff-alerts-mods
-	url = https://github.com/luascfl/gsheets-diff-alerts-mods
+	url = https://github.com/luascfl/gsheets-diff-alerts-mods.git
 [submodule "hide-liked-posts-instagram"]
 	path = hide-liked-posts-instagram
-	url = https://github.com/luascfl/hide-liked-posts-instagram
+	url = https://github.com/luascfl/hide-liked-posts-instagram.git
 [submodule "manage-chats-chatgpt"]
 	path = manage-chats-chatgpt
-	url = https://github.com/luascfl/manage-chats-chatgpt
+	url = https://github.com/luascfl/manage-chats-chatgpt.git
 [submodule "empty-google-tasks"]
 	path = empty-google-tasks
-	url = https://github.com/luascfl/empty-google-tasks
+	url = https://github.com/luascfl/empty-google-tasks.git
 [submodule "zotero-web-open-in-desktop"]
 	path = zotero-web-open-in-desktop
-	url = https://github.com/luascfl/zotero-web-open-in-desktop
+	url = https://github.com/luascfl/zotero-web-open-in-desktop.git
+[submodule "zapia_manager"]
+	path = zapia_manager
+	url = https://github.com/luascfl/zapia_manager.git
+[submodule "violentmonkey-tampermonkey-migrator"]
+	path = violentmonkey-tampermonkey-migrator
+	url = https://github.com/luascfl/violentmonkey-tampermonkey-migrator.git
