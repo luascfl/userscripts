@@ -31,3 +31,6 @@
 [submodule "endel-playback-control"]
 	path = endel-playback-control
 	url = https://github.com/luascfl/endel-playback-control.git
+[submodule "gupy-pipeline-stages"]
+	path = gupy-pipeline-stages
+	url = https://github.com/luascfl/gupy-pipeline-stages.git
