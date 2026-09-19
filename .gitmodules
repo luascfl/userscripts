@@ -34,3 +34,6 @@
 [submodule "gupy-pipeline-stages"]
 	path = gupy-pipeline-stages
 	url = https://github.com/luascfl/gupy-pipeline-stages.git
+[submodule "outlier-login-shortcut"]
+	path = outlier-login-shortcut
+	url = https://github.com/luascfl/outlier-login-shortcut.git
