@@ -25,3 +25,6 @@
 [submodule "linkedin-workflow-suite"]
 	path = linkedin-workflow-suite
 	url = https://github.com/luascfl/linkedin-workflow-suite.git
+[submodule "vacancy-workflow-suite"]
+	path = vacancy-workflow-suite
+	url = https://github.com/luascfl/vacancy-workflow-suite.git
