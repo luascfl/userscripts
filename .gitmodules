@@ -28,3 +28,6 @@
 [submodule "vacancy-workflow-suite"]
 	path = vacancy-workflow-suite
 	url = https://github.com/luascfl/vacancy-workflow-suite.git
+[submodule "endel-playback-control"]
+	path = endel-playback-control
+	url = https://github.com/luascfl/endel-playback-control.git
