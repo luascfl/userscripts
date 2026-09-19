@@ -22,3 +22,6 @@
 [submodule "violentmonkey-tampermonkey-migrator"]
 	path = violentmonkey-tampermonkey-migrator
 	url = https://github.com/luascfl/violentmonkey-tampermonkey-migrator.git
+[submodule "linkedin-workflow-suite"]
+	path = linkedin-workflow-suite
+	url = https://github.com/luascfl/linkedin-workflow-suite.git
